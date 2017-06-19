@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import AppHeader from "../layout/AppHeader";
 import { getListThunk } from "../actions";
-import { Text, StyleSheet, Image } from "react-native";
+import { Text, StyleSheet, Image, Platform, Alert } from "react-native";
 import { Actions } from "react-native-router-flux";
 import {
   Container,
@@ -15,11 +15,12 @@ import {
   Right,
   Spinner,
   Picker,
-  Item,
   List,
   ListItem,
   Thumbnail
 } from "native-base";
+
+import axios from "axios";
 
 const styles = StyleSheet.create({
   titleText: {
@@ -48,45 +49,80 @@ const styles = StyleSheet.create({
   }
 });
 
+const Item = Picker.Item;
+
 class OrderScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       orderInfo: null,
-      orderProducts: null
+      orderProducts: null,
+      selected1: "0",
+      statusColor: 'white'
     };
   }
 
   componentDidMount() {
     let dataUrl =
       "http://m-shop.vn/order-get-detail?order_id=" + this.props.info.id;
-    fetch(dataUrl)
-      .then(e => e.json())
+
+    //get data
+    axios
+      .get(dataUrl)
       .then(response => {
-        // console.log(response, "mount");
         this.setState({
-          orderInfo: response.data.info,
-          orderProducts: response.data.list
+          orderInfo: response.data.data.info,
+          orderProducts: response.data.data.list,
+          selected1: response.data.data.info.status
         });
-        console.log(this.state, "after fetched");
-        // dispatch(getList(response.data));
       })
       .catch(error => {
-        console.log(error, "error");
+        console.error(error);
       });
+  }
+
+  onValueChange(value) {
+    //send data to server
+    var data = {
+      order_id: this.props.info.id,
+      status: value
+    };
+    axios
+      .post("http://m-shop.vn/order-status-update", data)
+      .then(function(response) {
+        var resp = response.data;
+        switch (resp.status) {
+          case 1:
+            Alert.alert("Thành công", resp.data.userMessage);
+            break;
+          default:
+            Alert.alert("Lỗi", resp.data.userMessage);
+            break;
+        }
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    this.setState({
+      selected1: value
+    });
   }
 
   render() {
     return (
       <Container>
         <AppHeader />
-        <Content padder>
+        <Content style={{ paddingLeft: 10, paddingRight: 10 }}>
           {(() => {
             if (this.state.orderInfo == null) {
               return <Spinner />;
             } else {
               let orderObj = this.state.orderInfo;
-              return <Content>
+              console.log(this.state, "latest state");
+              return (
+                <Content>
                   <Text style={styles.titleText}>
                     Thông tin khách hàng
                   </Text>
@@ -113,15 +149,20 @@ class OrderScreen extends React.Component {
                   <Text style={styles.titleText}>
                     Tình trạng đơn hàng
                   </Text>
-                  <Card>
-                    <CardItem>
-                      <Picker supportedOrientations={["portrait", "landscape"]} iosHeader="Select one" mode="dropdown">
-                        <Item label="Wallet" value="key0" />
-                        <Item label="ATM Card" value="key1" />
-                        <Item label="Credit Card" value="key2" />
-                        <Item label="Debit Card" value="key3" />
-                      </Picker>
-                    </CardItem>
+                  <Card style={{backgroundColor: this.state.statusColor}}>
+                    <Picker
+                      style={{ marginLeft: Platform.OS === "ios" ? -25 : 0 }}
+                      supportedOrientations={["portrait", "landscape"]}
+                      iosHeader="Select one"
+                      mode="dropdown"
+                      onValueChange={this.onValueChange.bind(this)}
+                      selectedValue={this.state.selected1}
+                    >
+                      <Item label="ĐANG GIAO HÀNG" value="0" />
+                      <Item label="THÀNH CÔNG" value="1" />
+                      <Item label="CHỜ XÁC NHẬN" value="-1" />
+                      <Item label="ĐÃ HỦY" value="-2" />
+                    </Picker>
                   </Card>
 
                   <Text style={styles.titleText}>
@@ -134,9 +175,7 @@ class OrderScreen extends React.Component {
                           <Text style={[styles.textLeft, styles.bold]}>
                             Thời Gian
                           </Text>
-                          <Text
-                            style={[styles.textLeft, styles.bold]}
-                          >
+                          <Text style={[styles.textLeft, styles.bold]}>
                             Mã
                           </Text>
                           <Text style={[styles.textLeft, styles.bold]}>
@@ -158,9 +197,6 @@ class OrderScreen extends React.Component {
                           <Text />
                           <Text style={[styles.textLeft, styles.bold]}>
                             Thanh Toán
-                          </Text>
-                          <Text style={[styles.textLeft, styles.bold]}>
-                            Tình Trạng
                           </Text>
                         </Body>
                       </Left>
@@ -191,7 +227,8 @@ class OrderScreen extends React.Component {
                           <Text />
                           <Text style={[styles.textRight, styles.textFocus]}>
                             {(() => {
-                              if (orderObj.order_type == "chuyenkhoan") return "Chuyển khoản";
+                              if (orderObj.order_type == "chuyenkhoan")
+                                return "Chuyển khoản";
                               else return "Khi nhận hàng";
                             })()}
                           </Text>
@@ -204,18 +241,23 @@ class OrderScreen extends React.Component {
                     Sản phẩm trong đơn hàng
                   </Text>
                   <Card>
-                    <List dataArray={this.state.orderProducts} renderRow={item => <ListItem avatar>
+                    <List
+                      dataArray={this.state.orderProducts}
+                      renderRow={item =>
+                        <ListItem avatar>
                           <Left>
                             <Thumbnail square source={{ uri: item.img }} />
                           </Left>
                           <Body>
                             <Text>{item.name}</Text>
-                            <Text>{item.number}</Text>
-                            <Text>{item.price_2}</Text>
+                            <Text>Số lượng: {item.number}</Text>
+                            <Text>Giá: {item.price_2}</Text>
                           </Body>
-                        </ListItem>} />
+                        </ListItem>}
+                    />
                   </Card>
-                </Content>;
+                </Content>
+              );
             }
           }).bind(this)()}
         </Content>

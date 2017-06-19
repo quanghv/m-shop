@@ -20,10 +20,16 @@ import {
 
 class HomeScreen extends React.Component {
   componentWillMount() {
+    console.log('runHere?');
     this.props.getListThunk();
   }
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps, "next Props");
+    if (nextProps.value) {
+      Actions.refresh({ value: false, data: [] });
+    }
+  }
   render() {
-    // console.log(this.props, "hẻh");
     if (this.props.data.length > 0) {
       // console.log(this.props, "after fetch");
       let articles = this.props.data.map(
@@ -85,26 +91,6 @@ class HomeScreen extends React.Component {
         <Container>
           <AppHeader isHome="true" />
           <Content padder>
-
-            {/*<List
-              dataArray={this.props.data}
-              renderRow={item =>
-                <ListItem>
-                  <Card>
-                    <CardItem
-                      button
-                      onPress={() => {
-                        Actions.orderInfo();
-                        console.log(item);
-                        this.props.dataSelected(item);
-                      }}
-                    >
-                      <Text>AAA</Text>
-                    </CardItem>
-                  </Card>
-                </ListItem>}
-            />*/}
-
             {articles}
           </Content>
         </Container>
