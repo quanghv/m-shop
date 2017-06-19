@@ -23,7 +23,7 @@ class HomeScreen extends React.Component {
     this.props.getListThunk();
   }
   render() {
-    console.log(this.props, "hẻh");
+    // console.log(this.props, "hẻh");
     if (this.props.data.length > 0) {
       // console.log(this.props, "after fetch");
       let articles = this.props.data.map(
