@@ -58,7 +58,8 @@ class OrderScreen extends React.Component {
       orderInfo: null,
       orderProducts: null,
       selected1: "0",
-      statusColor: 'white'
+      statusColor: 'white',
+      needToRefresh: false
     };
   }
 
@@ -106,14 +107,15 @@ class OrderScreen extends React.Component {
       });
 
     this.setState({
-      selected1: value
+      selected1: value,
+      needToRefresh: true
     });
   }
 
   render() {
     return (
       <Container>
-        <AppHeader />
+        <AppHeader needToRefresh={this.state.needToRefresh} />
         <Content style={{ paddingLeft: 10, paddingRight: 10 }}>
           {(() => {
             if (this.state.orderInfo == null) {

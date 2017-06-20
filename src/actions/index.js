@@ -10,7 +10,7 @@ export function getList(data) {
 export function getListThunk() {
   return function(dispatch, getState) {
     axios
-      .get("http://m-shop.vn/order-get-new?order_status=99")
+      .get("http://m-shop.vn/api-list-order")
       .then(function(response) {
         // console.log(response.data.data);
         dispatch(getList(response.data.data));

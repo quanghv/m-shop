@@ -5,6 +5,7 @@ import { Header, Body, Left, Right, Button, Icon } from "native-base";
 
 export default class AppHeader extends React.Component {
   render() {
+    // console.log(this.props, "test app");
     if (this.props.isHome == "true") {
       return (
         <Header>
@@ -20,7 +21,7 @@ export default class AppHeader extends React.Component {
           <Left>
             <Button
               transparent
-              onPress={() => Actions.pop({ refresh: { value: true } })}
+              onPress={() => Actions.pop({ refresh: { value: this.props.needToRefresh } })}
             >
               <Icon name="arrow-back" />
             </Button>
