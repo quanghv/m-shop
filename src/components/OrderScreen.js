@@ -153,7 +153,6 @@ class OrderScreen extends React.Component {
                   </Text>
                   <Card style={{backgroundColor: this.state.statusColor}}>
                     <Picker
-                      style={{ marginLeft: Platform.OS === "ios" ? -25 : 0 }}
                       supportedOrientations={["portrait", "landscape"]}
                       iosHeader="Select one"
                       mode="dropdown"

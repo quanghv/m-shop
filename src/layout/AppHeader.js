@@ -9,7 +9,6 @@ export default class AppHeader extends React.Component {
     if (this.props.isHome == "true") {
       return (
         <Header>
-          <Left />
           <Body>
             <Image source={require("../assets/logo.png")} />
           </Body>
@@ -18,14 +17,12 @@ export default class AppHeader extends React.Component {
     } else {
       return (
         <Header>
-          <Left>
             <Button
               transparent
               onPress={() => Actions.pop({ refresh: { value: this.props.needToRefresh } })}
             >
               <Icon name="arrow-back" />
             </Button>
-          </Left>
           <Body>
             <Image source={require("../assets/logo.png")} />
           </Body>
