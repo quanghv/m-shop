@@ -19,7 +19,8 @@ export default class AppHeader extends React.Component {
         <Header>
             <Button
               transparent
-              onPress={() => Actions.pop({ refresh: { value: this.props.needToRefresh } })}
+              onPress={() =>
+                Actions.pop({ refresh: { value: this.props.needToRefresh } })}
             >
               <Icon name="arrow-back" />
             </Button>
