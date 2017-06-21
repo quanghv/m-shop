@@ -5,160 +5,100 @@ import AppHeader from "../layout/AppHeader";
 import { getListThunk, dataSelected } from "../actions/index";
 import { Actions } from "react-native-router-flux";
 
-import { View, Text, ListView, RefreshControl, OnEn } from "react-native";
-import {
-  Container,
-  Content,
-  Card,
-  CardItem,
-  Body,
-  Title,
-  Spinner,
-  List,
-  ListItem
-} from "native-base";
+import { View, Text, RefreshControl, FlatList } from "react-native";
+import { Container, Content, Card, CardItem, Body, Spinner } from "native-base";
+
+import constant from "../constant";
 
 class HomeScreen extends React.Component {
-  componentWillMount() {
-    // console.log("runHere?");
-    this.props.getListThunk();
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: 1,
+      data: [],
+      loadMore: true,
+      refreshing: false,
+      endLoadMore: false
+    };
   }
+  componentWillMount() {
+    this.getData(true);
+  }
+
   componentWillReceiveProps(nextProps) {
-    // console.log(nextProps, "next Props");
+    //refresh (Action back while data changed)
     if (nextProps.value) {
-      // console.log("value true");
       Actions.refresh({ value: false, data: [] });
-      this._onRefresh();
-      // this.props.getListThunk();
+      this.handleRefresh();
+    }
+
+    console.log("here");
+    //handle data
+    if (this.state.loadMore) {
+      this.setState({
+        loadMore: false,
+        data: this.state.page == 1
+          ? nextProps.data
+          : [...this.state.data, nextProps.data],
+        endLoadMore: nextProps.data.length == constant.PAGE_SIZE ? false : true
+      });
     }
   }
-  _onRefresh() {
-    this.props.getListThunk();
-    // this.setState({ refreshing: true });
-    // fetchData().then(() => {
-    //  this.setState({ refreshing: false });
-    // });
-  }
-  _onEndReached() {
-    console.log("test");
-  }
 
-  setCurrentReadOffset = event => {
-    // Log the current scroll position in the list in pixels
-    console.log(event.nativeEvent.contentOffset.y);
+  handleRefresh = () => {
+    console.log("refreshing...");
+    this.getData(true);
+    this.setState({
+      refreshing: false
+    });
   };
-  /**
-   * calculate 
-   * 
-   * @param {any} event 
-   * 
-   * @memberof HomeScreen
-   */
-  measureView(event) {
-    console.log("event properties: ", event.nativeEvent.layout);
-  }
+
+  handleEndReached = () => {
+    if (!this.state.endLoadMore) {
+      this.setState({
+        page: firstLoad ? 1 : this.state.page + 1,
+        loadMore: true
+      });
+      this.getData();
+      console.log("onEndReached");
+    } else {
+      console.log("No loadmore");
+    }
+  };
+
+  getData(firstLoad){
+    console.log("state",this.state);
+    this.props.getListThunk(this.state.page);
+  };
+
   render() {
-    console.log(this.props, "run here");
-    if (this.props.data.length > 0) {
-      // console.log(this.props, "after fetch");
-      console.log("data length", this.props.data.length);
-      let articles = this.props.data.map(
-        function(articleData, index) {
-          //if (index == 1) console.log(articleData);
-          return (
-            <Card
-              onLayout={
-                this.props.data.length == index
-                  ? event => this.measureView(event)
-                  : null
-              }
-              style={{ marginLeft: 10, marginRight: 10 }}
-              key={articleData.id}
-            >
-              <CardItem
-                button
-                onPress={() => {
-                  Actions.orderInfo();
-                  this.props.dataSelected(articleData);
-                }}
-              >
-
-                <Body>
-                  <Text style={{ fontWeight: "bold" }}>{articleData.code}</Text>
-                  <Text>{articleData.total_price}</Text>
-                  <Text style={{ fontStyle: "italic" }}>
-                    {articleData.update_time}
-                  </Text>
-                  {(() => {
-                    switch (articleData.status) {
-                      case "1":
-                        return (
-                          <Text style={{ color: "darkgreen" }}>
-                            {"Thành công".toLocaleUpperCase()}
-                          </Text>
-                        );
-                      case "0":
-                        return (
-                          <Text style={{ color: "#62B1F6" }}>
-                            {"Đang giao hàng".toLocaleUpperCase()}
-                          </Text>
-                        );
-                      case "-1":
-                        return (
-                          <Text style={{ color: "darkred" }}>
-                            {"Chờ xác nhận".toLocaleUpperCase()}
-                          </Text>
-                        );
-                      default:
-                        return (
-                          <Text style={{ color: "gray" }}>
-                            {"Đã hủy".toLocaleUpperCase()}
-                          </Text>
-                        );
-                    }
-                  })()}
-                  <Text style={{ fontStyle: "italic", color: "brown" }}>
-                    {articleData.note}
-                  </Text>
-                </Body>
-              </CardItem>
-            </Card>
-          );
-        }.bind(this)
-      );
-
+    console.log(this.props.data.length, "total order");
+    if (this.state.data.length > 0) {
+      console.log("data", this.state.data.length);
       return (
         <Container>
           <AppHeader isHome="true" />
-          {/*<Content padder>
-            <List
-              onEndReached={this._onEndReached.bind(this)}
-              onEndReachedThreshold={10}
-              dataArray={this.props.data}
+          <View
+            style={{
+              flex: 1,
+              padding: 10,
+              backgroundColor: "#f0f0f0"
+            }}
+          >
+            <FlatList
+              data={this.state.data}
+              renderItem={this.renderItem}
+              keyExtractor={item => item.id}
               refreshControl={
                 <RefreshControl
-                  refreshing={false}
-                  onRefresh={this._onRefresh.bind(this)}
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.handleRefresh}
                 />
               }
-              renderRow={item =>
-                <ListItem>
-                  <Text>{item.code}</Text>
-                </ListItem>}
+              onEndReachedThreshold={0.5}
+              onEndReached={this.handleEndReached}
             />
-
-          </Content>*/}
-          <Content
-            onScroll={this.setCurrentReadOffset}
-            refreshControl={
-              <RefreshControl
-                refreshing={false}
-                onRefresh={this._onRefresh.bind(this)}
-              />
-            }
-          >
-            {articles}
-          </Content>
+          </View>
         </Container>
       );
     } else {
@@ -174,6 +114,56 @@ class HomeScreen extends React.Component {
       );
     }
   }
+
+  renderItem = ({ item }) =>
+    <Card>
+      <CardItem
+        button
+        onPress={() => {
+          Actions.orderInfo();
+          this.props.dataSelected(item);
+        }}
+      >
+        <Body>
+          <Text style={{ fontWeight: "bold" }}>{item.code}</Text>
+          <Text>{item.total_price}</Text>
+          <Text style={{ fontStyle: "italic" }}>
+            {item.update_time}
+          </Text>
+          {(() => {
+            switch (item.status) {
+              case "1":
+                return (
+                  <Text style={{ color: "darkgreen" }}>
+                    {"Thành công".toLocaleUpperCase()}
+                  </Text>
+                );
+              case "0":
+                return (
+                  <Text style={{ color: "#62B1F6" }}>
+                    {"Đang giao hàng".toLocaleUpperCase()}
+                  </Text>
+                );
+              case "-1":
+                return (
+                  <Text style={{ color: "darkred" }}>
+                    {"Chờ xác nhận".toLocaleUpperCase()}
+                  </Text>
+                );
+              default:
+                return (
+                  <Text style={{ color: "gray" }}>
+                    {"Đã hủy".toLocaleUpperCase()}
+                  </Text>
+                );
+            }
+          })()}
+          <Text style={{ fontStyle: "italic", color: "brown" }}>
+            {item.note}
+          </Text>
+        </Body>
+      </CardItem>
+    </Card>;
 }
 
 function mapStateToProps(state) {

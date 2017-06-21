@@ -58,7 +58,7 @@ class OrderScreen extends React.Component {
       orderInfo: null,
       orderProducts: null,
       selected1: "0",
-      statusColor: 'white',
+      statusColor: "white",
       needToRefresh: false
     };
   }
@@ -78,6 +78,10 @@ class OrderScreen extends React.Component {
         });
       })
       .catch(error => {
+        Alert.alert(
+          "Lỗi",
+          "Không thể kết nối được với server.\n\nXin vui lòng thử lại sau ít phút..."
+        );
         console.error(error);
       });
   }
@@ -151,7 +155,7 @@ class OrderScreen extends React.Component {
                   <Text style={styles.titleText}>
                     Tình trạng đơn hàng
                   </Text>
-                  <Card style={{backgroundColor: this.state.statusColor}}>
+                  <Card style={{ backgroundColor: this.state.statusColor }}>
                     <Picker
                       style={{ marginLeft: Platform.OS === "ios" ? -25 : 0 }}
                       supportedOrientations={["portrait", "landscape"]}
