@@ -1,4 +1,4 @@
-package com.truyen;
+package vn.m.shop;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.reactnativecomponent.splashscreen.RCTSplashScreen;    //import RCTSplashScreen

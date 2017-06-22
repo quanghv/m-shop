@@ -21,7 +21,8 @@ export function getListThunk(page) {
     axios
       .get(url)
       .then(function(response) {
-        // console.log(response.data.data);
+        // response.data.data.isNew = true;
+        console.log(response.data.data, "data new");
         dispatch(getList(response.data.data));
       })
       .catch(function(error) {

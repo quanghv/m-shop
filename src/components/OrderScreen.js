@@ -2,7 +2,15 @@ import React from "react";
 import { connect } from "react-redux";
 import AppHeader from "../layout/AppHeader";
 import { getListThunk } from "../actions";
-import { Text, StyleSheet, Image, Platform, Alert } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  Platform,
+  Alert
+} from "react-native";
 import { Actions } from "react-native-router-flux";
 import {
   Container,
@@ -21,33 +29,6 @@ import {
 } from "native-base";
 
 import axios from "axios";
-
-const styles = StyleSheet.create({
-  titleText: {
-    fontWeight: "400",
-    marginTop: 10,
-    fontSize: 18
-  },
-  bold: {
-    fontWeight: "bold"
-  },
-  note: {
-    fontStyle: "italic",
-    color: "brown"
-  },
-  textRight: {
-    textAlign: "right",
-    alignSelf: "stretch"
-  },
-  textLeft: {
-    textAlign: "left",
-    alignSelf: "stretch"
-  },
-  textFocus: {
-    color: "#59348a",
-    fontWeight: "bold"
-  }
-});
 
 const Item = Picker.Item;
 
@@ -104,7 +85,7 @@ class OrderScreen extends React.Component {
             Alert.alert("Lỗi", resp.data.userMessage);
             break;
         }
-        console.log(response);
+        // console.log(response);
       })
       .catch(error => {
         console.log(error);
@@ -116,7 +97,13 @@ class OrderScreen extends React.Component {
     });
   }
 
+  handleEndReached = () => {
+    // console.log("OrderScreen", this.state);
+  };
+
   render() {
+    // console.log("OrderScreen prop", this.props);
+    // console.log("OrderScreen state", this.state);
     return (
       <Container>
         <AppHeader needToRefresh={this.state.needToRefresh} />
@@ -128,7 +115,7 @@ class OrderScreen extends React.Component {
               let orderObj = this.state.orderInfo;
               console.log(this.state, "latest state");
               return (
-                <Content>
+                <View>
                   <Text style={styles.titleText}>
                     Thông tin khách hàng
                   </Text>
@@ -247,6 +234,8 @@ class OrderScreen extends React.Component {
                   </Text>
                   <Card>
                     <List
+                      onEndReached={this.handleEndReached}
+                      onEndReachedThreshold={0}
                       dataArray={this.state.orderProducts}
                       renderRow={item =>
                         <ListItem avatar>
@@ -259,9 +248,10 @@ class OrderScreen extends React.Component {
                             <Text>Giá: {item.price_2}</Text>
                           </Body>
                         </ListItem>}
+                      keyExtractor={item => item.id}
                     />
                   </Card>
-                </Content>
+                </View>
               );
             }
           }).bind(this)()}
@@ -271,8 +261,34 @@ class OrderScreen extends React.Component {
   }
 }
 
-// export default OrderScreen;
+const styles = StyleSheet.create({
+  titleText: {
+    fontWeight: "400",
+    marginTop: 10,
+    fontSize: 18
+  },
+  bold: {
+    fontWeight: "bold"
+  },
+  note: {
+    fontStyle: "italic",
+    color: "brown"
+  },
+  textRight: {
+    textAlign: "right",
+    alignSelf: "stretch"
+  },
+  textLeft: {
+    textAlign: "left",
+    alignSelf: "stretch"
+  },
+  textFocus: {
+    color: "#59348a",
+    fontWeight: "bold"
+  }
+});
 
+// export default OrderScreen;
 function mapStateToProps(state) {
   return {
     info: state.info
