@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<<<<<<< HEAD
+=======
+	<key>CFBundleGetInfoString</key>
+	<string/>
+	<key>LSApplicationCategoryType</key>
+	<string/>
+>>>>>>> fac60cc9a330f6469b0d664403a592d264fcd6fa
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -28,10 +35,43 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+<<<<<<< HEAD
+=======
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string/>
+>>>>>>> fac60cc9a330f6469b0d664403a592d264fcd6fa
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+<<<<<<< HEAD
+=======
+			<key>m-shop.vn</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.0</string>
+			</dict>
+>>>>>>> fac60cc9a330f6469b0d664403a592d264fcd6fa
 			<key>localhost</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

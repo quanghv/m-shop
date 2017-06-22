@@ -50,7 +50,7 @@ android_build_config(
 
 android_resource(
     name = "res",
-    package = "com.truyen",
+    package = "vn.m.shop",
     res = "src/main/res",
 )
 

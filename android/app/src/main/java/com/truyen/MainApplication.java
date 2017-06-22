@@ -1,4 +1,4 @@
-package com.truyen;
+package vn.m.shop;
 
 import android.app.Application;
 
