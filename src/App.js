@@ -15,9 +15,15 @@ import thunk from "redux-thunk";
 import HomeScreen from "./components/HomeScreen";
 import OrderScreen from "./components/OrderScreen";
 
+//push notification onesignal
+import OneSignal from "react-native-onesignal";
+
 const store = createStore(allReducers, applyMiddleware(thunk));
 
 export default class App extends React.Component {
+  componentDidMount() {
+    OneSignal.configure({});
+  }
   render() {
     return (
       <Provider store={store}>

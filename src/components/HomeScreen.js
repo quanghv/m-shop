@@ -95,6 +95,8 @@ class HomeScreen extends React.Component {
             }}
           >
             <FlatList
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
               data={this.state.data}
               renderItem={this.renderItem}
               keyExtractor={item => item.id}
