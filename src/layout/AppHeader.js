@@ -38,15 +38,16 @@ export default class AppHeader extends React.Component {
                 </Left>
               );
             } else {
-              <Button
-                transparent
-                onPress={() =>
-                  Actions.pop({
-                    refresh: { value: this.props.needToRefresh }
-                  })}
-              >
-                <Icon name="arrow-back" />
-              </Button>;
+              return (
+                <Button
+                  transparent
+                  onPress={() =>
+                    Actions.pop({
+                      refresh: { value: this.props.needToRefresh }
+                    })}
+                >
+                  <Icon name="arrow-back" />
+                </Button>);
             }
           })()}
           <Body>

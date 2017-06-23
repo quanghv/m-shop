@@ -136,7 +136,7 @@ class HomeScreen extends React.Component {
         <Body>
           <Text style={{ fontWeight: "bold" }}>{item.code}</Text>
           <Text>{item.total_price}</Text>
-          <Text style={{ fontStyle: "italic" }}>
+          <Text style={{ fontStyle: "italic", marginBottom: 10 }}>
             {item.update_time}
           </Text>
           {(() => {
