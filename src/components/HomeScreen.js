@@ -53,51 +53,6 @@ class HomeScreen extends React.Component {
     });
   };
 
-<<<<<<< HEAD
-                <Body>
-                  <Text style={{ fontWeight: "bold" }}>{articleData.code}</Text>
-                  <Text>{articleData.total_price}</Text>
-                  <Text style={{ fontStyle: "italic", marginBottom: 10 }}>
-                    {articleData.update_time}
-                  </Text>
-                  {(() => {
-                    switch (articleData.status) {
-                      case "1":
-                        return (
-                          <Text style={{ color: "darkgreen" }}>
-                            {"Thành công".toLocaleUpperCase()}
-                          </Text>
-                        );
-                      case "0":
-                        return (
-                          <Text style={{ color: "#62B1F6" }}>
-                            {"Đang giao hàng".toLocaleUpperCase()}
-                          </Text>
-                        );
-                      case "-1":
-                        return (
-                          <Text style={{ color: "darkred" }}>
-                            {"Chờ xác nhận".toLocaleUpperCase()}
-                          </Text>
-                        );
-                      default:
-                        return (
-                          <Text style={{ color: "gray" }}>
-                            {"Đã hủy".toLocaleUpperCase()}
-                          </Text>
-                        );
-                    }
-                  })()}
-                  <Text style={{ fontStyle: "italic", color: "brown" }}>
-                    {articleData.note}
-                  </Text>
-                </Body>
-              </CardItem>
-            </Card>
-          );
-        }.bind(this)
-      );
-=======
   handleEndReached = () => {
     if (!this.state.endLoadMore) {
       this.setState({
@@ -115,7 +70,6 @@ class HomeScreen extends React.Component {
     console.log("state",this.state);
     this.props.getListThunk(this.state.page);
   };
->>>>>>> afc1c0e8f3bdc93508677bbd361557977e00293c
 
   render() {
     console.log(this.props.data.length, "total order");
