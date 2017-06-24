@@ -1,6 +1,6 @@
 import React from "react";
 import { Actions } from "react-native-router-flux";
-import { Image } from "react-native";
+import { Image, Platform } from "react-native";
 import { Header, Body, Left, Right, Button, Icon } from "native-base";
 
 export default class AppHeader extends React.Component {
@@ -9,6 +9,11 @@ export default class AppHeader extends React.Component {
     if (this.props.isHome == "true") {
       return (
         <Header>
+          {(() => {
+            if (Platform.OS == "android") {
+              return <Left />;
+            }
+          })()}
           <Body>
             <Image source={require("../assets/logo.png")} />
           </Body>
@@ -17,13 +22,34 @@ export default class AppHeader extends React.Component {
     } else {
       return (
         <Header>
-            <Button
-              transparent
-              onPress={() =>
-                Actions.pop({ refresh: { value: this.props.needToRefresh } })}
-            >
-              <Icon name="arrow-back" />
-            </Button>
+          {(() => {
+            if (Platform.OS == "android") {
+              return (
+                <Left>
+                  <Button
+                    transparent
+                    onPress={() =>
+                      Actions.pop({
+                        refresh: { value: this.props.needToRefresh }
+                      })}
+                  >
+                    <Icon name="arrow-back" />
+                  </Button>
+                </Left>
+              );
+            } else {
+              return (
+                <Button
+                  transparent
+                  onPress={() =>
+                    Actions.pop({
+                      refresh: { value: this.props.needToRefresh }
+                    })}
+                >
+                  <Icon name="arrow-back" />
+                </Button>);
+            }
+          })()}
           <Body>
             <Image source={require("../assets/logo.png")} />
           </Body>

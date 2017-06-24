@@ -2,7 +2,15 @@ import React from "react";
 import { connect } from "react-redux";
 import AppHeader from "../layout/AppHeader";
 import { getListThunk } from "../actions";
-import { Text, StyleSheet, Image, Platform, Alert } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  Platform,
+  Alert
+} from "react-native";
 import { Actions } from "react-native-router-flux";
 import {
   Container,
@@ -22,33 +30,6 @@ import {
 
 import axios from "axios";
 
-const styles = StyleSheet.create({
-  titleText: {
-    fontWeight: "400",
-    marginTop: 10,
-    fontSize: 18
-  },
-  bold: {
-    fontWeight: "bold"
-  },
-  note: {
-    fontStyle: "italic",
-    color: "brown"
-  },
-  textRight: {
-    textAlign: "right",
-    alignSelf: "stretch"
-  },
-  textLeft: {
-    textAlign: "left",
-    alignSelf: "stretch"
-  },
-  textFocus: {
-    color: "#59348a",
-    fontWeight: "bold"
-  }
-});
-
 const Item = Picker.Item;
 
 class OrderScreen extends React.Component {
@@ -58,14 +39,18 @@ class OrderScreen extends React.Component {
       orderInfo: null,
       orderProducts: null,
       selected1: "0",
-      statusColor: "white",
+      statusColor: "gray",
       needToRefresh: false
     };
   }
 
   componentDidMount() {
-    let dataUrl =
-      "http://m-shop.vn/order-get-detail?order_id=" + this.props.info.id;
+    // console.log(this.state, "sate");
+    // console.log(this.props, "props");
+    // let order_id = this.props.info != null
+    //   ? this.props.info.id
+    //   : this.props.order_id;
+    let dataUrl = "http://m-shop.vn/order-get-detail?order_id=" + this.props.order_id;
 
     //get data
     axios
@@ -74,7 +59,8 @@ class OrderScreen extends React.Component {
         this.setState({
           orderInfo: response.data.data.info,
           orderProducts: response.data.data.list,
-          selected1: response.data.data.info.status
+          selected1: response.data.data.info.status,
+          statusColor: this.getStatusColor(response.data.data.info.status)
         });
       })
       .catch(error => {
@@ -86,10 +72,27 @@ class OrderScreen extends React.Component {
       });
   }
 
+  getStatusColor(status) {
+    switch (status) {
+      case "-1":
+        return "#FF5722";
+      case "-11":
+        return "#FF5722";
+      case "-12":
+        return "#B0BEC5";
+      case "-2":
+        return "#7f8c8d";
+      case "0":
+        return "#1976D2";
+      case "1":
+        return "#2E7D32";
+    }
+  }
+
   onValueChange(value) {
     //send data to server
     var data = {
-      order_id: this.props.info.id,
+      order_id: this.props.order_id,
       status: value
     };
     axios
@@ -104,10 +107,14 @@ class OrderScreen extends React.Component {
             Alert.alert("Lỗi", resp.data.userMessage);
             break;
         }
-        console.log(response);
+        // console.log(response);
       })
       .catch(error => {
-        console.log(error);
+        Alert.alert(
+          "Lỗi",
+          "Không thể kết nối được với server.\n\nXin vui lòng thử lại sau ít phút..."
+        );
+        console.error(error);
       });
 
     this.setState({
@@ -128,7 +135,7 @@ class OrderScreen extends React.Component {
               let orderObj = this.state.orderInfo;
               console.log(this.state, "latest state");
               return (
-                <Content>
+                <View>
                   <Text style={styles.titleText}>
                     Thông tin khách hàng
                   </Text>
@@ -155,17 +162,20 @@ class OrderScreen extends React.Component {
                   <Text style={styles.titleText}>
                     Tình trạng đơn hàng
                   </Text>
-                  <Card style={{ backgroundColor: this.state.statusColor }}>
+                  <Card>
                     <Picker
                       supportedOrientations={["portrait", "landscape"]}
                       iosHeader="Select one"
                       mode="dropdown"
                       onValueChange={this.onValueChange.bind(this)}
                       selectedValue={this.state.selected1}
+                      style={{color: this.state.statusColor}}
                     >
-                      <Item label="ĐANG GIAO HÀNG" value="0" />
-                      <Item label="THÀNH CÔNG" value="1" />
                       <Item label="CHỜ XÁC NHẬN" value="-1" />
+                      <Item label="CHỜ GIAO HÀNG" value="-11" />
+                      <Item label="ĐANG GIAO HÀNG" value="0" />
+                      <Item label="HOÀN THÀNH" value="1" />
+                      <Item label="TRẢ HÀNG/HOÀN TIỀN" value="-12" />
                       <Item label="ĐÃ HỦY" value="-2" />
                     </Picker>
                   </Card>
@@ -259,9 +269,10 @@ class OrderScreen extends React.Component {
                             <Text>Giá: {item.price_2}</Text>
                           </Body>
                         </ListItem>}
+                      keyExtractor={item => item.id}
                     />
                   </Card>
-                </Content>
+                </View>
               );
             }
           }).bind(this)()}
@@ -271,11 +282,37 @@ class OrderScreen extends React.Component {
   }
 }
 
-// export default OrderScreen;
+const styles = StyleSheet.create({
+  titleText: {
+    fontWeight: "400",
+    marginTop: 10,
+    fontSize: 18
+  },
+  bold: {
+    fontWeight: "bold"
+  },
+  note: {
+    fontStyle: "italic",
+    color: "brown"
+  },
+  textRight: {
+    textAlign: "right",
+    alignSelf: "stretch"
+  },
+  textLeft: {
+    textAlign: "left",
+    alignSelf: "stretch"
+  },
+  textFocus: {
+    color: "#59348a",
+    fontWeight: "bold"
+  }
+});
 
-function mapStateToProps(state) {
-  return {
-    info: state.info
-  };
-}
-export default connect(mapStateToProps)(OrderScreen);
+export default OrderScreen;
+// function mapStateToProps(state) {
+//   return {
+//     info: state.info
+//   };
+// }
+// export default connect(mapStateToProps)(OrderScreen);

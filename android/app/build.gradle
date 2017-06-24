@@ -94,13 +94,24 @@ android {
     buildToolsVersion "25.0.3"
 
     defaultConfig {
-        applicationId "com.truyen"
+        applicationId "vn.m.shop"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
+                                onesignal_app_id: "67db6ec7-f605-4a30-bc81-69c76064beb4",
+                                onesignal_google_project_number: "rn-m-shop"]
+    }
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
         }
     }
     splits {
@@ -115,6 +126,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
@@ -137,6 +149,7 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:25+"
     compile "com.facebook.react:react-native:+"  // From node_modules
+    compile project(':react-native-onesignal')
 }
 
 // Run this once to be able to run the application with BUCK
