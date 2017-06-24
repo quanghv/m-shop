@@ -39,14 +39,18 @@ class OrderScreen extends React.Component {
       orderInfo: null,
       orderProducts: null,
       selected1: "0",
-      statusColor: "white",
+      statusColor: "gray",
       needToRefresh: false
     };
   }
 
   componentDidMount() {
-    let dataUrl =
-      "http://m-shop.vn/order-get-detail?order_id=" + this.props.info.id;
+    // console.log(this.state, "sate");
+    // console.log(this.props, "props");
+    // let order_id = this.props.info != null
+    //   ? this.props.info.id
+    //   : this.props.order_id;
+    let dataUrl = "http://m-shop.vn/order-get-detail?order_id=" + this.props.order_id;
 
     //get data
     axios
@@ -55,7 +59,8 @@ class OrderScreen extends React.Component {
         this.setState({
           orderInfo: response.data.data.info,
           orderProducts: response.data.data.list,
-          selected1: response.data.data.info.status
+          selected1: response.data.data.info.status,
+          statusColor: this.getStatusColor(response.data.data.info.status)
         });
       })
       .catch(error => {
@@ -67,10 +72,27 @@ class OrderScreen extends React.Component {
       });
   }
 
+  getStatusColor(status) {
+    switch (status) {
+      case "-1":
+        return "#FF5722";
+      case "-11":
+        return "#FF5722";
+      case "-12":
+        return "#B0BEC5";
+      case "-2":
+        return "#7f8c8d";
+      case "0":
+        return "#1976D2";
+      case "1":
+        return "#2E7D32";
+    }
+  }
+
   onValueChange(value) {
     //send data to server
     var data = {
-      order_id: this.props.info.id,
+      order_id: this.props.order_id,
       status: value
     };
     axios
@@ -88,7 +110,11 @@ class OrderScreen extends React.Component {
         // console.log(response);
       })
       .catch(error => {
-        console.log(error);
+        Alert.alert(
+          "Lỗi",
+          "Không thể kết nối được với server.\n\nXin vui lòng thử lại sau ít phút..."
+        );
+        console.error(error);
       });
 
     this.setState({
@@ -97,13 +123,7 @@ class OrderScreen extends React.Component {
     });
   }
 
-  handleEndReached = () => {
-    // console.log("OrderScreen", this.state);
-  };
-
   render() {
-    // console.log("OrderScreen prop", this.props);
-    // console.log("OrderScreen state", this.state);
     return (
       <Container>
         <AppHeader needToRefresh={this.state.needToRefresh} />
@@ -142,17 +162,20 @@ class OrderScreen extends React.Component {
                   <Text style={styles.titleText}>
                     Tình trạng đơn hàng
                   </Text>
-                  <Card style={{ backgroundColor: this.state.statusColor }}>
+                  <Card>
                     <Picker
                       supportedOrientations={["portrait", "landscape"]}
                       iosHeader="Select one"
                       mode="dropdown"
                       onValueChange={this.onValueChange.bind(this)}
                       selectedValue={this.state.selected1}
+                      style={{color: this.state.statusColor}}
                     >
-                      <Item label="ĐANG GIAO HÀNG" value="0" />
-                      <Item label="THÀNH CÔNG" value="1" />
                       <Item label="CHỜ XÁC NHẬN" value="-1" />
+                      <Item label="CHỜ GIAO HÀNG" value="-11" />
+                      <Item label="ĐANG GIAO HÀNG" value="0" />
+                      <Item label="HOÀN THÀNH" value="1" />
+                      <Item label="TRẢ HÀNG/HOÀN TIỀN" value="-12" />
                       <Item label="ĐÃ HỦY" value="-2" />
                     </Picker>
                   </Card>
@@ -234,8 +257,6 @@ class OrderScreen extends React.Component {
                   </Text>
                   <Card>
                     <List
-                      onEndReached={this.handleEndReached}
-                      onEndReachedThreshold={0}
                       dataArray={this.state.orderProducts}
                       renderRow={item =>
                         <ListItem avatar>
@@ -288,10 +309,10 @@ const styles = StyleSheet.create({
   }
 });
 
-// export default OrderScreen;
-function mapStateToProps(state) {
-  return {
-    info: state.info
-  };
-}
-export default connect(mapStateToProps)(OrderScreen);
+export default OrderScreen;
+// function mapStateToProps(state) {
+//   return {
+//     info: state.info
+//   };
+// }
+// export default connect(mapStateToProps)(OrderScreen);

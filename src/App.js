@@ -7,7 +7,7 @@ import mshop from "./theme/variables/mshop";
 
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
-import { Router, Scene } from "react-native-router-flux";
+import { Router, Scene, Actions } from "react-native-router-flux";
 
 import allReducers from "./reducers/index";
 import thunk from "redux-thunk";
@@ -23,6 +23,15 @@ const store = createStore(allReducers, applyMiddleware(thunk));
 export default class App extends React.Component {
   componentDidMount() {
     OneSignal.configure({});
+    OneSignal.addEventListener("opened", this.onOpened);
+  }
+  onOpened(openResult) {
+    // console.log(openResult);
+    let data = openResult.notification.payload.additionalData;
+    if (data != undefined) {
+      Actions.orderInfo({ order_id: data.order_id });
+    } else {
+    }
   }
   render() {
     return (
@@ -31,8 +40,8 @@ export default class App extends React.Component {
 
           <Router hideNavBar="true">
             <Scene key="root">
-              <Scene key="home" component={HomeScreen} initial="true" />
-              <Scene key="orderInfo" component={OrderScreen} />
+              <Scene key="home" component={HomeScreen} initial="true"/>
+              <Scene key="orderInfo" component={OrderScreen}  />
             </Scene>
           </Router>
 
