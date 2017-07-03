@@ -1,34 +1,45 @@
 import axios from "axios";
+// import Frisbee from "frisbee";
 import { Alert } from "react-native";
 import constant from "../constant";
 
+// const api = new Frisbee({
+//   baseURI: "http://m-shop.vn"
+// });
+
 export function getList(data) {
-  // console.log(data);
+  console.log(data, "xyz");
   return {
     type: "Get_List",
     payload: data
   };
 }
 
-export function getListThunk(page, currentData) {
+export function getError(error) {
+  return {
+    type: "Error",
+    payload: error
+  };
+}
+
+export function getListThunk(page, currentData, status) {
   return function(dispatch, getState) {
     let url =
       "http://m-shop.vn/api-list-order?page=" +
       page +
       "&size=" +
-      constant.PAGE_SIZE;
-    console.log("here?", currentData);
-    console.log(url);
+      constant.PAGE_SIZE +
+      "&status=" +
+      status;
+    console.log("axios get...", url);
+
     axios
       .get(url)
       .then(function(response) {
-        console.log("here?", page);
+        console.log("get page", page);
+        // dispatch(getList(response.data.data));
         let dataFetched = response.data.data;
         if (dataFetched.length > 0) {
-          // dataFetched.isLatestPage = dataFetched.data.length ==
-          //   constant.PAGE_SIZE
-          //   ? false
-          //   : true;
           if (page > 1) {
             dataFetched = [...currentData, ...dataFetched];
           }
@@ -36,27 +47,25 @@ export function getListThunk(page, currentData) {
           dispatch(getList(dataFetched));
         }
       })
-      .catch(function(error) {
-        Alert.alert(
-          "Lỗi",
-          "Không thể kết nối được với server.\n\nXin vui lòng thử lại sau ít phút..."
-        );
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
-        }
-        console.log(error.config);
+      .catch(error => {
+        console.log("error", error);
+        dispatch(getError(constant.NETWORK_ERROR));
+        // if (error.response) {
+        //   // The request was made and the server responded with a status code
+        //   // that falls out of the range of 2xx
+        //   console.log(error.response.data);
+        //   console.log(error.response.status);
+        //   console.log(error.response.headers);
+        // } else if (error.request) {
+        //   // The request was made but no response was received
+        //   // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        //   // http.ClientRequest in node.js
+        //   console.log(error.request);
+        // } else {
+        //   // Something happened in setting up the request that triggered an Error
+        //   console.log("Error", error.message);
+        // }
+        // console.log(error.config);
       });
   };
 }
