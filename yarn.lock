@@ -3644,6 +3644,12 @@ react-native-easy-grid@0.1.7:
   dependencies:
     lodash "^4.11.1"
 
+react-native-easy-grid@^0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/react-native-easy-grid/-/react-native-easy-grid-0.1.13.tgz#1212794308f3c73d77a709615f008b788c87c254"
+  dependencies:
+    lodash "^4.11.1"
+
 react-native-experimental-navigation@0.28.x:
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/react-native-experimental-navigation/-/react-native-experimental-navigation-0.28.0.tgz#561298190320cd336dc5b00c2e8bc2435cfb4909"

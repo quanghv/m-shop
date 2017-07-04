@@ -2,16 +2,20 @@ import React from "react";
 import { TabNavigator, StackNavigator } from "react-navigation";
 import { Footer, FooterTab, Icon, Button, Text } from "native-base";
 
-import Confirm from "./Confirm";
+import TabConfirm from "./TabConfirm";
+import TabShipping from "./TabShipping";
+import TabFinish from "./TabFinish";
+import TabCancel from "./TabCancel";
 
 export const TabScreen = TabNavigator(
   {
-    TabConfirm: { screen: Confirm },
-    TabShipping: { screen: Confirm },
-    TabFinish: { screen: Confirm },
-    TabCancel: { screen: Confirm }
+    TabConfirm: { screen: TabConfirm },
+    TabShipping: { screen: TabShipping },
+    TabFinish: { screen: TabFinish },
+    TabCancel: { screen: TabCancel }
   },
   {
+    // lazy: true,
     tabBarPosition: "bottom",
     tabBarComponent: props => {
       return (

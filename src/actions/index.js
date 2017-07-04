@@ -1,29 +1,44 @@
 import axios from "axios";
-// import Frisbee from "frisbee";
-import { Alert } from "react-native";
 import constant from "../constant";
 
-// const api = new Frisbee({
-//   baseURI: "http://m-shop.vn"
-// });
-
-export function getList(data) {
-  console.log(data, "xyz");
+export function getList(data, status) {
+  let type = null;
+  switch (status) {
+    case constant.STATUS.SHIPPING:
+      type = constant.TYPES.LIST_ORDER_SHIPPING;
+      break;
+    case constant.STATUS.FINISH:
+      type = constant.TYPES.LIST_ORDER_FINISH;
+      break;
+    case constant.STATUS.CANCEL:
+      type = constant.TYPES.LIST_ORDER_CANCEL;
+      break;
+    default:
+      type = constant.TYPES.LIST_ORDER_CONFIRM;
+      break;
+  }
   return {
-    type: "Get_List",
+    type,
     payload: data
   };
 }
 
-export function getError(error) {
+export const isLoading = bool => {
   return {
-    type: "Error",
-    payload: error
+    type: constant.TYPES.LOADING,
+    isLoading: bool
+  };
+};
+
+export function getError(bool) {
+  return {
+    type: constant.TYPES.NETWORK_ERROR,
+    getError: bool
   };
 }
 
-export function getListThunk(page, currentData, status) {
-  return function(dispatch, getState) {
+export const getListThunk = (page, currentData, status) => {
+  return dispatch => {
     let url =
       "http://m-shop.vn/api-list-order?page=" +
       page +
@@ -33,23 +48,27 @@ export function getListThunk(page, currentData, status) {
       status;
     console.log("axios get...", url);
 
+    if (currentData === undefined) dispatch(isLoading(true));
+
     axios
       .get(url)
-      .then(function(response) {
+      .then(response => {
+        if (currentData === undefined) dispatch(isLoading(false));
         console.log("get page", page);
         // dispatch(getList(response.data.data));
         let dataFetched = response.data.data;
-        if (dataFetched.length > 0) {
-          if (page > 1) {
-            dataFetched = [...currentData, ...dataFetched];
-          }
-          console.log(dataFetched, "data new");
-          dispatch(getList(dataFetched));
+        // if (dataFetched.length > 0) {
+        if (page > 1) {
+          dataFetched = [...currentData, ...dataFetched];
         }
+        console.log(dataFetched, "data new");
+        dispatch(getList(dataFetched, status));
+        // }
       })
       .catch(error => {
+        dispatch(isLoading(false));
         console.log("error", error);
-        dispatch(getError(constant.NETWORK_ERROR));
+        dispatch(getError(true));
         // if (error.response) {
         //   // The request was made and the server responded with a status code
         //   // that falls out of the range of 2xx
@@ -68,7 +87,7 @@ export function getListThunk(page, currentData, status) {
         // console.log(error.config);
       });
   };
-}
+};
 
 export function dataSelected(item) {
   // console.log(item);

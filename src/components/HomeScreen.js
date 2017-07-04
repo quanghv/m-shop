@@ -11,20 +11,9 @@ import {
   Text,
   RefreshControl,
   FlatList,
-  TouchableHighlight,
-  ActivityIndicator
+  TouchableHighlight
 } from "react-native";
-import {
-  Container,
-  Content,
-  Card,
-  CardItem,
-  Body,
-  Spinner,
-  List,
-  ListItem,
-  SearchBar
-} from "native-base";
+import { Container, Content, Card, CardItem, Body, Spinner } from "native-base";
 
 import constant from "../constant";
 
@@ -164,8 +153,12 @@ class HomeScreen extends React.Component {
       >
         <CardItem>
           <Body>
-            <Text style={{ fontWeight: "bold" }}>{item.code}</Text>
-            <Text>{item.total_price}</Text>
+            <Text style={{ fontWeight: "bold" }}>
+              {item.code}
+            </Text>
+            <Text>
+              {item.total_price}
+            </Text>
             <Text style={{ fontStyle: "italic", marginBottom: 10 }}>
               {item.update_time}
             </Text>

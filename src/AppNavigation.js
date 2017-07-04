@@ -7,8 +7,7 @@ import allReducers from "./reducers/index";
 import thunk from "redux-thunk";
 import { StyleProvider } from "native-base";
 
-import { MainStack } from "./tabScreen/router";
-// import OrderScreen from "./components/OrderScreen";
+import { MainStack } from "./screen/tabScreen/router";
 
 //push notification onesignal
 import OneSignal from "react-native-onesignal";

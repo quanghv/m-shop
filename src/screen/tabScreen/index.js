@@ -1,37 +1,35 @@
 import React from "react";
-// import AppHeader from "../layout/AppHeader";
-import NetworkError from "../layout/NetworkError";
-// import { Actions } from "react-native-router-flux";
+import AppBase from "../../layout/AppBase";
+import { hasError } from "../../helper/apiHelper";
 
 import {
   View,
-  Text,
   RefreshControl,
   FlatList,
   TouchableHighlight
   // ActivityIndicator
 } from "react-native";
-import { Container, Content, Card, CardItem, Body, Spinner } from "native-base";
+import { Container, Card, CardItem, Body, Spinner, Text } from "native-base";
 
-import constant from "../constant";
+import constant from "../../constant";
 
-export default class TabScreen extends React.Component {
+export default class TabScreen extends AppBase {
   constructor(props) {
     super(props);
 
-    let status = constant.STATUS_CONFIRM;
+    let status = constant.STATUS.CONFIRM;
     switch (this.props.navigation.state.key) {
       case "TabConfirm":
-        status = constant.STATUS_CONFIRM;
+        status = constant.STATUS.CONFIRM;
         break;
       case "TabShipping":
-        status = constant.STATUS_CONFIRM_SHIPPING;
+        status = constant.STATUS.CONFIRM_SHIPPING;
         break;
       case "TabFinish":
-        status = constant.STATUS_FINISH;
+        status = constant.STATUS.FINISH;
         break;
       case "TabCancel":
-        status = constant.STATUS_CANCEL;
+        status = constant.STATUS.CANCEL;
         break;
       default:
         break;
@@ -39,22 +37,41 @@ export default class TabScreen extends React.Component {
 
     this.state = {
       page: 1,
-      loading: true,
-      data: [],
+      data: undefined,
       orderStatus: status,
       refreshing: false,
       endLoadMore: false
     };
   }
-  componentWillMount() {
+  // componentWillMount() {
+  //   this.getData();
+  // }
+
+  componentDidMount() {
     this.getData();
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log("nextProps", nextProps);
+    console.log("status", this.state.orderStatus);
     //refresh (Action back while data changed)
-    const propsData = nextProps.data;
+    let propsData;
+    switch (this.state.orderStatus) {
+      case constant.STATUS.SHIPPING:
+        propsData = nextProps.listOrderShipping;
+        break;
+      case constant.STATUS.FINISH:
+        propsData = nextProps.listOrderFinish;
+        break;
+      case constant.STATUS.CANCEL:
+        propsData = nextProps.listOrderCancel;
+        break;
+      default:
+        propsData = nextProps.listOrderConfirm;
+        break;
+    }
+
     if (nextProps.value) {
-      propsData.data = false;
       // Actions.refresh({ value: false });
       this.handleRefresh();
     }
@@ -62,9 +79,15 @@ export default class TabScreen extends React.Component {
     //console.log(nextProps.data, "data fetched");
     this.setState({
       data: propsData,
-      loading: false,
-      endLoadMore: nextProps.data.length % constant.PAGE_SIZE
+      endLoadMore:
+        propsData !== null &&
+        propsData !== undefined &&
+        propsData.length % constant.PAGE_SIZE
     });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log("DID UPDATE");
   }
 
   getData() {
@@ -76,26 +99,24 @@ export default class TabScreen extends React.Component {
   }
 
   handleRefresh = () => {
-    console.log("refreshing...");
-    setTimeout(() => {
-      this.setState(
-        {
-          page: 1,
-          data: []
-        },
-        () => {
-          this.getData();
-        }
-      );
-      this.setState({
-        refreshing: false
-      });
-    }, 3000);
+    // console.log("refreshing...");
+    this.setState(
+      {
+        page: 1,
+        data: undefined
+      },
+      () => {
+        this.getData();
+      }
+    );
+    this.setState({
+      refreshing: false
+    });
   };
 
   handleEndReached = () => {
-    console.log(this.state.endLoadMore);
-    if (!this.state.endLoadMore && !this.state.loading) {
+    // console.log(this.state.endLoadMore);
+    if (!this.state.endLoadMore && !this.props.isLoading) {
       this.setState(
         {
           page: this.state.page + 1
@@ -128,31 +149,27 @@ export default class TabScreen extends React.Component {
             </Text>
             {(() => {
               switch (item.status) {
-                case constant.STATUS_FINISH:
-                  return (
-                    <Text style={{ color: "#2E7D32" }}>
-                      {"HOÀN THÀNH"}
-                    </Text>
-                  );
-                case constant.STATUS_CONFIRM:
+                case constant.STATUS.FINISH:
+                  return <Text style={{ color: "#2E7D32" }}>HOÀN THÀNH</Text>;
+                case constant.STATUS.CONFIRM:
                   return (
                     <Text style={{ color: "#BF360C" }}>
                       {"CHỜ XÁC NHẬN"}
                     </Text>
                   );
-                case constant.STATUS_CONFIRM_SHIPPING:
+                case constant.STATUS.CONFIRM_SHIPPING:
                   return (
                     <Text style={{ color: "#FF5722" }}>
                       {"CHỜ GIAO HÀNG"}
                     </Text>
                   );
-                case constant.STATUS_SHIPPING:
+                case constant.STATUS.SHIPPING:
                   return (
                     <Text style={{ color: "#1976D2" }}>
                       {"ĐANG GIAO HÀNG"}
                     </Text>
                   );
-                case constant.STATUS_CANCEL_USER:
+                case constant.STATUS.CANCEL_USER:
                   return (
                     <Text style={{ color: "#B0BEC5" }}>
                       {"TRẢ HÀNG/HOÀN TIỀN"}
@@ -175,7 +192,15 @@ export default class TabScreen extends React.Component {
     </Card>;
 
   renderFooter = () => {
-    if (!this.state.endLoadMore) return <Spinner />;
+    if (!this.state.endLoadMore)
+      return (
+        <View>
+          <Body>
+            <Spinner />
+            <Text>Đang tải thêm dữ liệu...</Text>
+          </Body>
+        </View>
+      );
     return (
       <View>
         <Body style={{ paddingTop: 5, paddingBottom: 5 }}>
@@ -186,17 +211,18 @@ export default class TabScreen extends React.Component {
   };
 
   render() {
-    // console.log(this.props, "data latest");
-    console.log(this.state, "state data latest");
-    if (this.props.data === constant.NETWORK_ERROR) {
-      return (
-        <Container>
-          {/*<AppHeader isHome="true" />*/}
-          <NetworkError error={this.state.data} />
-        </Container>
-      );
-    } else if (this.state.data != undefined && this.props.data.length > 0) {
-      return (
+    let view;
+
+    if (this.props.getError) {
+      view = hasError();
+    } else if (this.props.isLoading) {
+      view = this.renderLoading();
+    } else if (
+      this.state.data !== null &&
+      this.state.data !== undefined &&
+      this.state.data.length > 0
+    ) {
+      view = (
         <Container>
           {/*<AppHeader isHome="true" />*/}
           <View
@@ -210,7 +236,7 @@ export default class TabScreen extends React.Component {
             <FlatList
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
-              data={this.props.data}
+              data={this.state.data}
               renderItem={this.renderItem}
               ListFooterComponent={this.renderFooter}
               keyExtractor={item => item.id}
@@ -231,34 +257,8 @@ export default class TabScreen extends React.Component {
         </Container>
       );
     } else {
-      return (
-        <Container>
-          {/*<AppHeader isHome="true" />*/}
-          <Content padder>
-            <Body>
-              <Spinner />
-            </Body>
-          </Content>
-        </Container>
-      );
+      view = this.renderNoData();
     }
+    return view;
   }
 }
-
-// function mapStateToProps(state) {
-//   return {
-//     data: state.data
-//   };
-// }
-
-// function matchDispatchToProps(dispatch) {
-//   return bindActionCreators(
-//     {
-//       getListThunk,
-//       dataSelected
-//     },
-//     dispatch
-//   );
-// }
-
-// export default connect(mapStateToProps, matchDispatchToProps)(HomeScreen);

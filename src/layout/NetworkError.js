@@ -10,16 +10,13 @@ export default class NetworkError extends React.PureComponent {
     this.state = { loading: false };
   }
 
-  showLoading() {
-    this.setState({
-      loading: true
-    });
+  componentDidMount() {
+    console.log("did mount");
   }
-
   componentWillReceiveProps(nextProps) {
     console.log("nextProps", nextProps);
     this.setState({
-      loading: nextProps.error == constant.NETWORK_ERROR ? false : true
+      loading: nextProps.error == constant.NETWORK_ERROR
     });
   }
 
@@ -31,10 +28,11 @@ export default class NetworkError extends React.PureComponent {
       }, 3000);
     }
   }
-  componentDidMount() {
-    console.log("did mount");
+  showLoading() {
+    this.setState({
+      loading: true
+    });
   }
-
   render() {
     console.log("render...");
     console.log("error state", this.state);
@@ -43,7 +41,12 @@ export default class NetworkError extends React.PureComponent {
       <Content style={{ padding: 20 }}>
         {(() => {
           if (this.state.loading) {
-            return <Body><Spinner /><Text>Đang thử kết nối lại</Text></Body>;
+            return (
+              <Body>
+                <Spinner />
+                <Text>Đang thử kết nối lại</Text>
+              </Body>
+            );
           } else {
             return (
               <Body>

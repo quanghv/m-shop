@@ -1,11 +1,22 @@
 import { combineReducers } from "redux";
 // import layoutReducer from "./layoutReducer";
-import listReducer from "./listReducer";
+// import listReducer from "./listReducer";
+import { getError, isLoading } from "./base";
+import {
+  listOrderConfirm,
+  listOrderShipping,
+  listOrderFinish,
+  listOrderCancel
+} from "./orderReducer";
 import infoReducer from "./infoReducer";
 
 const allReducers = combineReducers({
-  // layoutHome: layoutReducer,
-  data: listReducer,
+  isLoading,
+  getError,
+  listOrderConfirm,
+  listOrderShipping,
+  listOrderFinish,
+  listOrderCancel,
   info: infoReducer
 });
 export default allReducers;

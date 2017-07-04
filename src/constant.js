@@ -1,10 +1,19 @@
 module.exports = {
   PAGE_SIZE: 10,
-  NETWORK_ERROR: "NETWORK_ERROR",
-  STATUS_CONFIRM: -1,
-  STATUS_CONFIRM_SHIPPING: -11,
-  STATUS_SHIPPING: 0,
-  STATUS_CANCEL_USER: -12,
-  STATUS_CANCEL: -2,
-  STATUS_FINISH: 1
+  TYPES: {
+    LOADING: "Loading",
+    NETWORK_ERROR: "NetworkError",
+    LIST_ORDER_CONFIRM: "ListOrderConfirm",
+    LIST_ORDER_SHIPPING: "ListOrderShipping",
+    LIST_ORDER_FINISH: "ListOrderFinish",
+    LIST_ORDER_CANCEL: "ListOrderCancel"
+  },
+  STATUS: {
+    CONFIRM: '-1',
+    CONFIRM_SHIPPING: '-11',
+    SHIPPING: '0',
+    CANCEL_USER: '-12',
+    CANCEL: '-2',
+    FINISH: '1'
+  }
 };
