@@ -1,11 +1,11 @@
 import React from "react";
 import { Actions } from "react-native-router-flux";
 import { Image, Platform } from "react-native";
-import { Header, Body, Left, Right, Button, Icon } from "native-base";
+import { Header, Body, Left, Button, Icon } from "native-base";
 
 export default class AppHeader extends React.Component {
   render() {
-    // console.log(this.props, "test app");
+    console.log(this.props, "test app");
     if (this.props.isHome == "true") {
       return (
         <Header>
@@ -23,15 +23,17 @@ export default class AppHeader extends React.Component {
       return (
         <Header>
           {(() => {
-            if (Platform.OS == "android") {
+            if (Platform.OS === "android") {
               return (
                 <Left>
                   <Button
                     transparent
-                    onPress={() =>
-                      Actions.pop({
-                        refresh: { value: this.props.needToRefresh }
-                      })}
+                    onPress={() => {
+                      if (this.props.needToRefresh) {
+                        this.props.nav.state.params.refreshFunc();
+                        this.props.nav.goBack();
+                      }
+                    }}
                   >
                     <Icon name="arrow-back" />
                   </Button>
@@ -47,7 +49,8 @@ export default class AppHeader extends React.Component {
                     })}
                 >
                   <Icon name="arrow-back" />
-                </Button>);
+                </Button>
+              );
             }
           })()}
           <Body>

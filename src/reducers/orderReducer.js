@@ -35,3 +35,21 @@ export const listOrderCancel = (state = null, action) => {
       return state;
   }
 };
+
+export const orderDetail = (state = null, action) => {
+  switch (action.type) {
+    case constant.TYPES.ORDER_DETAIL:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const orderStatus = (state = null, action) => {
+  switch (action.type) {
+    case constant.TYPES.CHANGE_ORDER_STATUS:
+      return action.payload;
+    default:
+      return state;
+  }
+};

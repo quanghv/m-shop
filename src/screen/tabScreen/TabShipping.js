@@ -1,5 +1,5 @@
-import TabScreen from "./index";
 import { connect } from "react-redux";
+import TabScreen from "./index";
 import { getListThunk, dataSelected } from "../../actions/index";
 
 class TabShipping extends TabScreen {}

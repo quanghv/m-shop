@@ -6,7 +6,9 @@ import {
   listOrderConfirm,
   listOrderShipping,
   listOrderFinish,
-  listOrderCancel
+  listOrderCancel,
+  orderDetail,
+  orderStatus
 } from "./orderReducer";
 import infoReducer from "./infoReducer";
 
@@ -17,6 +19,8 @@ const allReducers = combineReducers({
   listOrderShipping,
   listOrderFinish,
   listOrderCancel,
+  orderDetail,
+  orderStatus,
   info: infoReducer
 });
 export default allReducers;

@@ -1,16 +1,17 @@
 import React from "react";
-import getThem from "./theme/components";
-import mshop from "./theme/variables/mshop";
+
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
-import allReducers from "./reducers/index";
 import thunk from "redux-thunk";
 import { StyleProvider } from "native-base";
+import OneSignal from "react-native-onesignal";
 
-import { MainStack } from "./screen/tabScreen/router";
+import allReducers from "./reducers/index";
+import getThem from "./theme/components";
+import mshop from "./theme/variables/mshop";
+import { MainStack } from "./screen/router";
 
 //push notification onesignal
-import OneSignal from "react-native-onesignal";
 
 const store = createStore(allReducers, applyMiddleware(thunk));
 
@@ -20,12 +21,16 @@ export default class App extends React.Component {
     OneSignal.addEventListener("opened", this.onOpened);
   }
   onOpened(openResult) {
-    // console.log(openResult);
-    // let data = openResult.notification.payload.additionalData;
-    // if (data != undefined) {
-    //   Actions.orderInfo({ order_id: data.order_id });
-    // } else {
-    // }
+    console.log(openResult);
+    const data = openResult.notification.payload.additionalData;
+    if (data !== undefined) {
+      this.props.navigation.navigate("OrderDetail", {
+        orderId: data.order_id,
+        selected: -1,
+        refreshFunc: () => {}
+      });
+    } else {
+    }
   }
   render() {
     return (

@@ -1,7 +1,4 @@
 import React from "react";
-import AppBase from "../../layout/AppBase";
-import { hasError } from "../../helper/apiHelper";
-
 import {
   View,
   RefreshControl,
@@ -11,6 +8,8 @@ import {
 } from "react-native";
 import { Container, Card, CardItem, Body, Spinner, Text } from "native-base";
 
+import AppBase from "../../layout/AppBase";
+import { hasError } from "../../helper/apiHelper";
 import constant from "../../constant";
 
 export default class TabScreen extends AppBase {
@@ -43,17 +42,15 @@ export default class TabScreen extends AppBase {
       endLoadMore: false
     };
   }
-  // componentWillMount() {
-  //   this.getData();
-  // }
-
-  componentDidMount() {
+  componentWillMount() {
     this.getData();
   }
 
+  // componentDidMount() {
+  //   this.getData();
+  // }
+
   componentWillReceiveProps(nextProps) {
-    console.log("nextProps", nextProps);
-    console.log("status", this.state.orderStatus);
     //refresh (Action back while data changed)
     let propsData;
     switch (this.state.orderStatus) {
@@ -66,8 +63,10 @@ export default class TabScreen extends AppBase {
       case constant.STATUS.CANCEL:
         propsData = nextProps.listOrderCancel;
         break;
-      default:
+      case constant.STATUS.CONFIRM:
         propsData = nextProps.listOrderConfirm;
+        break;
+      default:
         break;
     }
 
@@ -86,9 +85,9 @@ export default class TabScreen extends AppBase {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    console.log("DID UPDATE");
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   console.log("DID UPDATE");
+  // }
 
   getData() {
     this.props.getListThunk(
@@ -128,14 +127,17 @@ export default class TabScreen extends AppBase {
     }
   };
 
+  onOrderPress = item => {
+    this.props.navigation.navigate("OrderDetail", {
+      orderId: item.id,
+      selected: item.status,
+      refreshFunc: this.handleRefresh
+    });
+  };
+
   renderItem = ({ item }) =>
     <Card>
-      <TouchableHighlight
-        onPress={() => {
-          //Actions.orderInfo({ order_id: item.id });
-          this.props.dataSelected(item);
-        }}
-      >
+      <TouchableHighlight onPress={() => this.onOrderPress(item)}>
         <CardItem style={{ borderRadius: 0 }}>
           <Body>
             <Text style={{ fontWeight: "bold" }}>
@@ -192,7 +194,8 @@ export default class TabScreen extends AppBase {
     </Card>;
 
   renderFooter = () => {
-    if (!this.state.endLoadMore)
+    if (this.state.data.length < 10) return null;
+    if (!this.state.endLoadMore) {
       return (
         <View>
           <Body>
@@ -201,6 +204,7 @@ export default class TabScreen extends AppBase {
           </Body>
         </View>
       );
+    }
     return (
       <View>
         <Body style={{ paddingTop: 5, paddingBottom: 5 }}>
@@ -222,6 +226,7 @@ export default class TabScreen extends AppBase {
       this.state.data !== undefined &&
       this.state.data.length > 0
     ) {
+      // const navigation = this.props.navigation;
       view = (
         <Container>
           {/*<AppHeader isHome="true" />*/}

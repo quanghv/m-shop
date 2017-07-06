@@ -4,34 +4,25 @@ import { Container, Text, Button, Body, Icon, Spinner } from "native-base";
 import { Grid, Row } from "react-native-easy-grid";
 
 export default class AppBase extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tryAgain: false
-    };
-  }
-
-  renderLoading = () => {
-    return (
-      <Container>
-        <View style={styles.viewMiddle}>
-          <Grid style={{ alignItems: "center" }}>
-            <Row />
-            <Row>
-              <View>
-                <Body>
-                  <Spinner />
-                  <Text />
-                  <Text>Đang tải dữ liệu...</Text>
-                </Body>
-              </View>
-            </Row>
-            <Row />
-          </Grid>
-        </View>
-      </Container>
-    );
-  };
+  renderLoading = header =>
+    <Container>
+      {header}
+      <View style={styles.viewMiddle}>
+        <Grid style={{ alignItems: "center" }}>
+          <Row />
+          <Row>
+            <View>
+              <Body>
+                <Spinner />
+                <Text />
+                <Text>Đang tải dữ liệu...</Text>
+              </Body>
+            </View>
+          </Row>
+          <Row />
+        </Grid>
+      </View>
+    </Container>;
 
   renderNoData = () => {
     console.log("noDATA", this);
