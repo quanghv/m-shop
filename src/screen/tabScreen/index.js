@@ -9,7 +9,7 @@ import {
 import { Container, Card, CardItem, Body, Spinner, Text } from "native-base";
 
 import AppBase from "../../layout/AppBase";
-import { hasError } from "../../helper/apiHelper";
+// import { hasError } from "../../helper/apiHelper";
 import constant from "../../constant";
 
 export default class TabScreen extends AppBase {
@@ -218,7 +218,7 @@ export default class TabScreen extends AppBase {
     let view;
 
     if (this.props.getError) {
-      view = hasError();
+      view = this.renderNetworkError();
     } else if (this.props.isLoading) {
       view = this.renderLoading();
     } else if (

@@ -30,7 +30,6 @@ export default class App extends React.Component {
     let data = openResult.notification.payload.additionalData;
     if (data != undefined) {
       Actions.orderInfo({ order_id: data.order_id });
-    } else {
     }
   }
   render() {

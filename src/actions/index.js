@@ -1,6 +1,10 @@
 import axios from "axios";
 import constant from "../constant";
 
+export const dispatchData = (dispatch, dispatchFunct) => {
+  dispatch(dispatchFunct);
+};
+
 export const reponseFromApi = (data, type) => ({
   type,
   payload: data
@@ -23,12 +27,15 @@ export const getListThunk = (page, currentData, status) => dispatch => {
 
   console.log("axios get...", url);
 
-  if (currentData === undefined) dispatch(isLoading(true));
+  if (currentData === undefined) dispatchData(dispatch, isLoading(true));
 
   axios
     .get(url)
     .then(response => {
-      if (currentData === undefined) dispatch(isLoading(false));
+      if (currentData === undefined) {
+        dispatchData(dispatch, dispatch(isLoading(false)));
+      }
+
       console.log("get page", page);
       // dispatch(getList(response.data.data));
       let dataFetched = response.data.data;
@@ -55,11 +62,11 @@ export const getListThunk = (page, currentData, status) => dispatch => {
         default:
           break;
       }
+      dispatch(getError(false));
       dispatch(reponseFromApi(dataFetched, type));
       // }
     })
     .catch(error => {
-      dispatch(isLoading(false));
       console.log("error", error);
       dispatch(getError(true));
     });
@@ -74,11 +81,11 @@ export const getOrderDetail = orderId => dispatch => {
   axios
     .get(url)
     .then(response => {
+      dispatch(getError(false));
       dispatch(isLoading(false));
       dispatch(reponseFromApi(response.data.data, constant.TYPES.ORDER_DETAIL));
     })
     .catch(error => {
-      dispatch(isLoading(false));
       console.log("error", error);
       dispatch(getError(true));
     });
@@ -92,6 +99,7 @@ export const changeOrderStatus = (orderId, status) => dispatch => {
   axios
     .post("http://m-shop.vn/order-status-update", data)
     .then(response => {
+      dispatch(getError(false));
       dispatch(
         reponseFromApi(response.data.data, constant.TYPES.CHANGE_ORDER_STATUS)
       );

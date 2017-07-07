@@ -95,7 +95,11 @@ class OrderDetail extends AppBase {
     }
     console.log("changeOrderStatus", this.props.orderStatus);
     let view = null;
-    if (this.props.isLoading) {
+    if (this.props.getError) {
+      view = this.renderLoading(
+        <AppHeader needToRefresh={this.state.needToRefresh} />
+      );
+    } else if (this.props.isLoading) {
       view = this.renderLoading(
         <AppHeader needToRefresh={this.state.needToRefresh} />
       );
@@ -103,7 +107,10 @@ class OrderDetail extends AppBase {
       const orderObj = this.props.orderDetail.info;
       view = (
         <Container>
-          <AppHeader needToRefresh={this.state.needToRefresh} nav={this.props.navigation} />
+          <AppHeader
+            needToRefresh={this.state.needToRefresh}
+            nav={this.props.navigation}
+          />
           <Content>
             <View
               style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 5 }}

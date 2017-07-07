@@ -17,26 +17,32 @@ const store = createStore(allReducers, applyMiddleware(thunk));
 
 export default class App extends React.Component {
   componentDidMount() {
-    OneSignal.configure({});
-    OneSignal.addEventListener("opened", this.onOpened);
+    OneSignal.addEventListener("opened", this.onOpened.bind(this));
   }
+
   onOpened(openResult) {
-    console.log(openResult);
+    // console.log(openResult);
     const data = openResult.notification.payload.additionalData;
     if (data !== undefined) {
-      this.props.navigation.navigate("OrderDetail", {
+      const params = {
         orderId: data.order_id,
         selected: -1,
         refreshFunc: () => {}
-      });
-    } else {
+      };
+      this.navigator &&
+        this.navigator._navigation.navigate("OrderDetail", params);
     }
   }
+
   render() {
     return (
       <Provider store={store}>
         <StyleProvider style={getThem(mshop)}>
-          <MainStack />
+          <MainStack
+            ref={nav => {
+              this.navigator = nav;
+            }}
+          />
         </StyleProvider>
       </Provider>
     );
