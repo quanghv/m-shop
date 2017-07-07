@@ -37,9 +37,9 @@ export default class App extends React.Component {
       <Provider store={store}>
         <StyleProvider style={getThem(mshop)}>
 
-          <Router hideNavBar="true">
+          <Router hideNavBar="true"  style={{backgroundColor: "#59348a"}}>
             <Scene key="root">
-              <Scene key="home" component={HomeScreen} initial="true"/>
+              <Scene key="home" title="Main" component={HomeScreen} initial="true"/>
               <Scene key="orderInfo" component={OrderScreen}  />
             </Scene>
           </Router>
