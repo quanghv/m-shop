@@ -1,5 +1,6 @@
 import axios from "axios";
 import constant from "../constant";
+import { consoleLog } from "../appLog";
 
 export const dispatchData = (dispatch, dispatchFunct) => {
   dispatch(dispatchFunct);
@@ -25,7 +26,7 @@ export const getListThunk = (page, currentData, status) => dispatch => {
   const url = `http://m-shop.vn/api-list-order?page=
       ${page}&size=${constant.PAGE_SIZE}&status=${status}`;
 
-  console.log("axios get...", url);
+  // consoleLog("axios get...", url);
 
   if (currentData === undefined) dispatchData(dispatch, isLoading(true));
 
@@ -36,14 +37,14 @@ export const getListThunk = (page, currentData, status) => dispatch => {
         dispatchData(dispatch, dispatch(isLoading(false)));
       }
 
-      console.log("get page", page);
+      consoleLog("get page", page);
       // dispatch(getList(response.data.data));
       let dataFetched = response.data.data;
       // if (dataFetched.length > 0) {
       if (page > 1) {
         dataFetched = [...currentData, ...dataFetched];
       }
-      console.log(dataFetched, "data new");
+      consoleLog(dataFetched, "data new");
 
       let type = null;
       switch (status) {
@@ -67,7 +68,7 @@ export const getListThunk = (page, currentData, status) => dispatch => {
       // }
     })
     .catch(error => {
-      console.log("error", error);
+      consoleLog("error", error);
       dispatch(getError(true));
     });
 };
@@ -76,7 +77,7 @@ export const getOrderDetail = orderId => dispatch => {
   const url = `http://m-shop.vn/order-get-detail?order_id=
       ${orderId}`;
 
-  console.log("getOrderDetail", url);
+  consoleLog("getOrderDetail", url);
   dispatch(isLoading(true));
   axios
     .get(url)
@@ -86,7 +87,7 @@ export const getOrderDetail = orderId => dispatch => {
       dispatch(reponseFromApi(response.data.data, constant.TYPES.ORDER_DETAIL));
     })
     .catch(error => {
-      console.log("error", error);
+      consoleLog("error", error);
       dispatch(getError(true));
     });
 };
@@ -105,7 +106,7 @@ export const changeOrderStatus = (orderId, status) => dispatch => {
       );
     })
     .catch(error => {
-      console.log("error", error);
+      consoleLog("error", error);
       dispatch(getError(true));
     });
 };

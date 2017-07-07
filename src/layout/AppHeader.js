@@ -2,10 +2,11 @@ import React from "react";
 // import { Actions } from "react-native-router-flux";
 import { Image, Platform } from "react-native";
 import { Header, Body, Left, Button, Icon } from "native-base";
+import { consoleLog } from "../appLog";
 
 export default class AppHeader extends React.Component {
   render() {
-    console.log(this.props, "test app");
+    consoleLog(this.props, "test app");
 
     let view = null;
 

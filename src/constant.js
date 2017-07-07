@@ -1,4 +1,5 @@
 module.exports = {
+  DEBUG: false,
   PAGE_SIZE: 10,
   TYPES: {
     LOADING: "Loading",

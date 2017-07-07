@@ -22,6 +22,7 @@ import {
   resetOrderStatus
 } from "../actions";
 
+import { consoleLog } from "../appLog";
 import AppBase from "../layout/AppBase";
 
 const Item = Picker.Item;
@@ -41,7 +42,7 @@ class OrderDetail extends AppBase {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("componentDidUpdate");
+    consoleLog("componentDidUpdate");
     this.props.resetOrderStatus();
   }
 
@@ -93,7 +94,7 @@ class OrderDetail extends AppBase {
     if (this.props.orderStatus !== null) {
       Alert.alert("Thông báo", this.props.orderStatus.userMessage);
     }
-    console.log("changeOrderStatus", this.props.orderStatus);
+    consoleLog("changeOrderStatus", this.props.orderStatus);
     let view = null;
     if (this.props.getError) {
       view = this.renderLoading(

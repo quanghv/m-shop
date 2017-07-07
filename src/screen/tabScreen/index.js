@@ -11,6 +11,7 @@ import { Container, Card, CardItem, Body, Spinner, Text } from "native-base";
 import AppBase from "../../layout/AppBase";
 // import { hasError } from "../../helper/apiHelper";
 import constant from "../../constant";
+import { consoleLog } from "../../appLog";
 
 export default class TabScreen extends AppBase {
   constructor(props) {
@@ -75,7 +76,7 @@ export default class TabScreen extends AppBase {
       this.handleRefresh();
     }
 
-    //console.log(nextProps.data, "data fetched");
+    //consoleLog(nextProps.data, "data fetched");
     this.setState({
       data: propsData,
       endLoadMore:
@@ -86,7 +87,7 @@ export default class TabScreen extends AppBase {
   }
 
   // componentDidUpdate(prevProps, prevState) {
-  //   console.log("DID UPDATE");
+  //   consoleLog("DID UPDATE");
   // }
 
   getData() {
@@ -98,7 +99,7 @@ export default class TabScreen extends AppBase {
   }
 
   handleRefresh = () => {
-    // console.log("refreshing...");
+    // consoleLog("refreshing...");
     this.setState(
       {
         page: 1,
@@ -114,7 +115,7 @@ export default class TabScreen extends AppBase {
   };
 
   handleEndReached = () => {
-    // console.log(this.state.endLoadMore);
+    // consoleLog(this.state.endLoadMore);
     if (!this.state.endLoadMore && !this.props.isLoading) {
       this.setState(
         {
@@ -123,7 +124,7 @@ export default class TabScreen extends AppBase {
         () => this.getData()
       );
     } else {
-      console.log("No loadmore");
+      consoleLog("No loadmore");
     }
   };
 

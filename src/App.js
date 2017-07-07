@@ -26,9 +26,9 @@ export default class App extends React.Component {
     OneSignal.addEventListener("opened", this.onOpened);
   }
   onOpened(openResult) {
-    // console.log(openResult);
-    let data = openResult.notification.payload.additionalData;
-    if (data != undefined) {
+    // consoleLog(openResult);
+    const data = openResult.notification.payload.additionalData;
+    if (data !== undefined) {
       Actions.orderInfo({ order_id: data.order_id });
     }
   }

@@ -29,8 +29,9 @@ export default class App extends React.Component {
         selected: -1,
         refreshFunc: () => {}
       };
-      this.navigator &&
+      if (this.navigator) {
         this.navigator._navigation.navigate("OrderDetail", params);
+      }
     }
   }
 

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View } from "react-native";
 import { Container, Text, Button, Body, Icon, Spinner } from "native-base";
 import { Grid, Row } from "react-native-easy-grid";
+import { consoleLog } from "../appLog";
 
 export default class AppBase extends Component {
   renderLoading = header =>
@@ -25,7 +26,7 @@ export default class AppBase extends Component {
     </Container>;
 
   renderNoData = header => {
-    console.log("noDATA", this);
+    consoleLog("noDATA", this);
     return (
       <Container>
         {header}
@@ -58,7 +59,7 @@ export default class AppBase extends Component {
   };
 
   renderNetworkError = header => {
-    console.log("network error");
+    consoleLog("network error");
     return (
       <Container>
         {header}
