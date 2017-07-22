@@ -1,60 +1,71 @@
 import React from "react";
-import { Actions } from "react-native-router-flux";
+// import { Actions } from "react-native-router-flux";
 import { Image, Platform } from "react-native";
-import { Header, Body, Left, Right, Button, Icon } from "native-base";
+import { Header, Body, Left, Button, Icon } from "native-base";
+import { consoleLog } from "../appLog";
 
 export default class AppHeader extends React.Component {
   render() {
-    // console.log(this.props, "test app");
-    if (this.props.isHome == "true") {
-      return (
+    // consoleLog(this.props, "test app");
+
+    let view = null;
+
+    if (this.props.isHome === "true") {
+      view = (
         <Header>
-          {(() => {
-            if (Platform.OS == "android") {
-              return <Left />;
-            }
-          })()}
+          {Platform.OS === "android" ? <Left /> : ""}
           <Body>
             <Image source={require("../assets/logo.png")} />
           </Body>
         </Header>
       );
     } else {
-      return (
+      let left = null;
+      if (Platform.OS === "android") {
+        left = (
+          <Left>
+            <Button
+              transparent
+              onPress={() => {
+                if (this.props.needToRefresh) {
+                  this.props.nav.state.params.refreshFunc();
+                  this.props.nav.goBack();
+                } else {
+                  this.props.nav.goBack();
+                }
+              }}
+            >
+              <Icon name="arrow-back" />
+            </Button>
+          </Left>
+        );
+      } else {
+        left = (
+          <Button
+            transparent
+            onPress={() => {
+              if (this.props.needToRefresh) {
+                this.props.nav.state.params.refreshFunc();
+                this.props.nav.goBack();
+              } else {
+                this.props.nav.goBack();
+              }
+            }}
+          >
+            <Icon name="arrow-back" />
+          </Button>
+        );
+      }
+      view = (
         <Header>
-          {(() => {
-            if (Platform.OS == "android") {
-              return (
-                <Left>
-                  <Button
-                    transparent
-                    onPress={() =>
-                      Actions.pop({
-                        refresh: { value: this.props.needToRefresh }
-                      })}
-                  >
-                    <Icon name="arrow-back" />
-                  </Button>
-                </Left>
-              );
-            } else {
-              return (
-                <Button
-                  transparent
-                  onPress={() =>
-                    Actions.pop({
-                      refresh: { value: this.props.needToRefresh }
-                    })}
-                >
-                  <Icon name="arrow-back" />
-                </Button>);
-            }
-          })()}
+          {left}
           <Body>
             <Image source={require("../assets/logo.png")} />
           </Body>
         </Header>
       );
     }
+
+    return view;
   }
 }

@@ -2,14 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleGetInfoString</key>
+	<string/>
+	<key>LSApplicationCategoryType</key>
+	<string/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>vn</string>
 	<key>CFBundleDisplayName</key>
 	<string>M-SHOP.VN</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+<<<<<<< HEAD
 	<key>CFBundleGetInfoString</key>
 	<string></string>
+=======
+>>>>>>> 68e664bcf9226fce7a2364202cad6c3ac0a84ab3
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -24,19 +31,33 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+<<<<<<< HEAD
 	<key>LSApplicationCategoryType</key>
 	<string></string>
+=======
+>>>>>>> 68e664bcf9226fce7a2364202cad6c3ac0a84ab3
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
 			<key>m-shop.vn</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -48,10 +69,18 @@
 				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 		</dict>
 	</dict>
+<<<<<<< HEAD
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+=======
+>>>>>>> 68e664bcf9226fce7a2364202cad6c3ac0a84ab3
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
@@ -67,6 +96,7 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
 	</array>
+<<<<<<< HEAD
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -82,5 +112,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+=======
+>>>>>>> 68e664bcf9226fce7a2364202cad6c3ac0a84ab3
 </dict>
 </plist>

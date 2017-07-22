@@ -2,6 +2,7 @@ import React from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import AppHeader from "../layout/AppHeader";
+import NetworkError from "../layout/NetworkError";
 import { getListThunk, dataSelected } from "../actions/index";
 import { Actions } from "react-native-router-flux";
 
@@ -21,6 +22,7 @@ class HomeScreen extends React.Component {
     super(props);
     this.state = {
       page: 1,
+      loading: true,
       data: [],
       refreshing: false,
       endLoadMore: false
@@ -31,41 +33,43 @@ class HomeScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("componentWillReceiveProps");
     //refresh (Action back while data changed)
+    let propsData = nextProps.data;
     if (nextProps.value) {
-      Actions.refresh({ value: false, data: [] });
+      propsData.data = false;
+      Actions.refresh({ value: false });
       this.handleRefresh();
     }
 
-    //handle data
     //console.log(nextProps.data, "data fetched");
     this.setState({
-      data: this.state.page == 1
-        ? nextProps.data
-        : [...this.state.data, ...nextProps.data],
-      endLoadMore: nextProps.data.length == constant.PAGE_SIZE ? false : true
+      data: propsData,
+      loading: false,
+      endLoadMore: nextProps.data.length % constant.PAGE_SIZE ? true : false
     });
   }
 
   handleRefresh = () => {
     console.log("refreshing...");
-    this.setState(
-      {
-        page: 1,
-        data: []
-      },
-      () => {
-        this.getData();
-      }
-    );
-    this.setState({
-      refreshing: false
-    });
+    setTimeout(() => {
+      this.setState(
+        {
+          page: 1,
+          data: []
+        },
+        () => {
+          this.getData();
+        }
+      );
+      this.setState({
+        refreshing: false
+      });
+    }, 3000);
   };
 
   handleEndReached = () => {
-    if (!this.state.endLoadMore) {
+    console.log(this.state.endLoadMore);
+    if (!this.state.endLoadMore && !this.state.loading) {
       this.setState(
         {
           page: this.state.page + 1
@@ -78,12 +82,20 @@ class HomeScreen extends React.Component {
   };
 
   getData() {
-    this.props.getListThunk(this.state.page);
+    this.props.getListThunk(this.state.page, this.state.data);
   }
 
   render() {
-    console.log(this.state.data, "data latest");
-    if (this.state.data.length > 0) {
+    // console.log(this.props, "data latest");
+    console.log(this.state, "state data latest");
+    if (this.props.data === constant.NETWORK_ERROR) {
+      return (
+        <Container>
+          <AppHeader isHome="true" />
+          <NetworkError error={this.state.data} />
+        </Container>
+      );
+    } else if (this.state.data != undefined && this.props.data.length > 0) {
       return (
         <Container>
           <AppHeader isHome="true" />
@@ -97,8 +109,9 @@ class HomeScreen extends React.Component {
             <FlatList
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
-              data={this.state.data}
+              data={this.props.data}
               renderItem={this.renderItem}
+              ListFooterComponent={this.renderFooter}
               keyExtractor={item => item.id}
               refreshControl={
                 <RefreshControl
@@ -106,8 +119,12 @@ class HomeScreen extends React.Component {
                   onRefresh={this.handleRefresh}
                 />
               }
-              onEndReachedThreshold={0.5}
+              onEndReachedThreshold={0.3}
               onEndReached={this.handleEndReached}
+              contentContainerStyle={{
+                borderBottomWidth: 0,
+                borderTopWidth: 0
+              }}
             />
           </View>
         </Container>
@@ -128,53 +145,81 @@ class HomeScreen extends React.Component {
 
   renderItem = ({ item }) =>
     <Card>
-      <CardItem
-        button
+      <TouchableHighlight
         onPress={() => {
-          Actions.orderInfo();
+          Actions.orderInfo({ order_id: item.id });
           this.props.dataSelected(item);
         }}
       >
-        <Body>
-          <Text style={{ fontWeight: "bold" }}>{item.code}</Text>
-          <Text>{item.total_price}</Text>
-          <Text style={{ fontStyle: "italic", marginBottom: 10 }}>
-            {item.update_time}
-          </Text>
-          {(() => {
-            switch (item.status) {
-              case "1":
-                return (
-                  <Text style={{ color: "darkgreen" }}>
-                    {"Thành công".toLocaleUpperCase()}
-                  </Text>
-                );
-              case "0":
-                return (
-                  <Text style={{ color: "#62B1F6" }}>
-                    {"Đang giao hàng".toLocaleUpperCase()}
-                  </Text>
-                );
-              case "-1":
-                return (
-                  <Text style={{ color: "darkred" }}>
-                    {"Chờ xác nhận".toLocaleUpperCase()}
-                  </Text>
-                );
-              default:
-                return (
-                  <Text style={{ color: "gray" }}>
-                    {"Đã hủy".toLocaleUpperCase()}
-                  </Text>
-                );
-            }
-          })()}
-          <Text style={{ fontStyle: "italic", color: "brown" }}>
-            {item.note}
-          </Text>
-        </Body>
-      </CardItem>
+        <CardItem>
+          <Body>
+            <Text style={{ fontWeight: "bold" }}>
+              {item.code}
+            </Text>
+            <Text>
+              {item.total_price}
+            </Text>
+            <Text style={{ fontStyle: "italic", marginBottom: 10 }}>
+              {item.update_time}
+            </Text>
+            {(() => {
+              switch (item.status) {
+                case "1":
+                  return (
+                    <Text style={{ color: "#2E7D32" }}>
+                      {"HOÀN THÀNH"}
+                    </Text>
+                  );
+                case "-1":
+                  return (
+                    <Text style={{ color: "#BF360C" }}>
+                      {"CHỜ XÁC NHẬN"}
+                    </Text>
+                  );
+                case "-11":
+                  return (
+                    <Text style={{ color: "#FF5722" }}>
+                      {"CHỜ GIAO HÀNG"}
+                    </Text>
+                  );
+                case "0":
+                  return (
+                    <Text style={{ color: "#1976D2" }}>
+                      {"ĐANG GIAO HÀNG"}
+                    </Text>
+                  );
+                case "-12":
+                  return (
+                    <Text style={{ color: "#B0BEC5" }}>
+                      {"TRẢ HÀNG/HOÀN TIỀN"}
+                    </Text>
+                  );
+                default:
+                  return (
+                    <Text style={{ color: "#7f8c8d" }}>
+                      {"ĐÃ HỦY"}
+                    </Text>
+                  );
+              }
+            })()}
+            <Text style={{ fontStyle: "italic", color: "brown" }}>
+              {item.note}
+            </Text>
+          </Body>
+        </CardItem>
+      </TouchableHighlight>
     </Card>;
+
+  renderFooter = () => {
+    if (!this.state.endLoadMore) return <Spinner />;
+    return (
+      <View>
+        <Body style={{ paddingTop: 5, paddingBottom: 5 }}>
+          <Text>Đã hết dữ liệu</Text>
+        </Body>
+      </View>
+    );
+  };
 }
 
 function mapStateToProps(state) {

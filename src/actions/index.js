@@ -1,59 +1,117 @@
 import axios from "axios";
-import { Alert } from "react-native";
 import constant from "../constant";
+import { consoleLog } from "../appLog";
 
-export function getList(data) {
-  // console.log(data);
-  return {
-    type: "Get_List",
-    payload: data
-  };
-}
+export const dispatchData = (dispatch, dispatchFunct) => {
+  dispatch(dispatchFunct);
+};
 
-export function getListThunk(page) {
-  return function(dispatch, getState) {
-    let url =
-      "http://m-shop.vn/api-list-order?page=" +
-      page +
-      "&size=" +
-      constant.PAGE_SIZE;
-    console.log(url);
-    axios
-      .get(url)
-      .then(function(response) {
-        // response.data.data.isNew = true;
-        console.log(response.data.data, "data new");
-        dispatch(getList(response.data.data));
-      })
-      .catch(function(error) {
-        Alert.alert(
-          "Lỗi",
-          "Không thể kết nối được với server.\n\nXin vui lòng thử lại sau ít phút..."
-        );
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
-        }
-        console.log(error.config);
-      });
-  };
-}
+export const reponseFromApi = (data, type) => ({
+  type,
+  payload: data
+});
 
-export function dataSelected(item) {
-  // console.log(item);
-  return {
-    type: "Get_Info",
-    payload: item
+export const isLoading = bool => ({
+  type: constant.TYPES.LOADING,
+  isLoading: bool
+});
+
+export const getError = bool => ({
+  type: constant.TYPES.NETWORK_ERROR,
+  getError: bool
+});
+
+//api action
+export const getListThunk = (page, currentData, status) => dispatch => {
+  const url = `http://m-shop.vn/api-list-order?page=${page}&size=${constant.PAGE_SIZE}&status=${status}`;
+
+  consoleLog("axios get...", url);
+
+  if (currentData === undefined) dispatchData(dispatch, isLoading(true));
+
+  axios
+    .get(url)
+    .then(response => {
+      if (currentData === undefined) {
+        dispatchData(dispatch, dispatch(isLoading(false)));
+      }
+
+      consoleLog("get page", page);
+      consoleLog(response.data);
+      let dataFetched = response.data.data;
+      // if (dataFetched.length > 0) {
+      if (page > 1) {
+        dataFetched = [...currentData, ...dataFetched];
+      }
+      consoleLog(dataFetched, "data new" + status);
+
+      let type = null;
+      switch (status) {
+        case constant.STATUS.CONFIRM_SHIPPING:
+        case constant.STATUS.SHIPPING:
+          type = constant.TYPES.LIST_ORDER_SHIPPING;
+          break;
+        case constant.STATUS.FINISH:
+          type = constant.TYPES.LIST_ORDER_FINISH;
+          break;
+        case constant.STATUS.CANCEL_USER:
+        case constant.STATUS.CANCEL:
+          type = constant.TYPES.LIST_ORDER_CANCEL;
+          break;
+        case constant.STATUS.CONFIRM:
+          type = constant.TYPES.LIST_ORDER_CONFIRM;
+          break;
+        default:
+          break;
+      }
+      dispatch(getError(false));
+      dispatch(reponseFromApi(dataFetched, type));
+      // }
+    })
+    .catch(error => {
+      consoleLog("error", error);
+      dispatch(getError(true));
+    });
+};
+
+export const getOrderDetail = orderId => dispatch => {
+  const url = `http://m-shop.vn/order-get-detail?order_id=
+      ${orderId}`;
+
+  consoleLog("getOrderDetail", url);
+  dispatch(isLoading(true));
+  axios
+    .get(url)
+    .then(response => {
+      dispatch(getError(false));
+      dispatch(isLoading(false));
+      dispatch(reponseFromApi(response.data.data, constant.TYPES.ORDER_DETAIL));
+    })
+    .catch(error => {
+      consoleLog("error", error);
+      dispatch(getError(true));
+    });
+};
+
+export const changeOrderStatus = (orderId, status) => dispatch => {
+  const data = {
+    order_id: orderId,
+    status
   };
-}
+  axios
+    .post("http://m-shop.vn/order-status-update", data)
+    .then(response => {
+      dispatch(getError(false));
+      dispatch(
+        reponseFromApi(response.data.data, constant.TYPES.CHANGE_ORDER_STATUS)
+      );
+    })
+    .catch(error => {
+      consoleLog("error", error);
+      dispatch(getError(true));
+    });
+};
+
+export const resetOrderStatus = () => dispatch => {
+  dispatch(reponseFromApi(null, constant.TYPES.CHANGE_ORDER_STATUS));
+};

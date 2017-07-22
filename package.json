@@ -5,16 +5,24 @@
 	"scripts": {
 		"start": "node node_modules/react-native/local-cli/cli.js start",
 		"test": "jest",
+<<<<<<< HEAD
 		"ios": "open ios/OneSignalExample.xcworkspace"
+=======
+		"react-devtools": "react-devtools"
+>>>>>>> 68e664bcf9226fce7a2364202cad6c3ac0a84ab3
 	},
 	"dependencies": {
 		"axios": "^0.16.2",
+		"eslint-config-rallycoding": "^3.2.0",
+		"moment": "^2.18.1",
 		"native-base": "^2.1.5",
 		"react": "16.0.0-alpha.12",
 		"react-native": "0.45.1",
+		"react-native-easy-grid": "^0.1.13",
 		"react-native-onesignal": "^3.0.4",
 		"react-native-router-flux": "^3.40.1",
 		"react-native-smart-splash-screen": "^2.3.4",
+		"react-navigation": "^1.0.0-beta.11",
 		"react-redux": "^5.0.5",
 		"redux": "^3.6.0",
 		"redux-thunk": "^2.2.0"

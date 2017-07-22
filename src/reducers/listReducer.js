@@ -5,6 +5,8 @@ export default function(state = data, action) {
       //   console.log(action);
       data = action.payload;
       return data;
+    case "Error":
+      return action.payload;
   }
   return data;
 }
