@@ -9,6 +9,7 @@ import {
 import { Container, Card, CardItem, Body, Spinner, Text } from "native-base";
 
 import AppBase from "../../layout/AppBase";
+// import AppHeader from "../../layout/AppHeader";
 // import { hasError } from "../../helper/apiHelper";
 import constant from "../../constant";
 import { consoleLog } from "../../appLog";
@@ -55,12 +56,14 @@ export default class TabScreen extends AppBase {
     //refresh (Action back while data changed)
     let propsData;
     switch (this.state.orderStatus) {
+      case constant.STATUS.CONFIRM_SHIPPING:
       case constant.STATUS.SHIPPING:
         propsData = nextProps.listOrderShipping;
         break;
       case constant.STATUS.FINISH:
         propsData = nextProps.listOrderFinish;
         break;
+      case constant.STATUS.CANCEL_USER:
       case constant.STATUS.CANCEL:
         propsData = nextProps.listOrderCancel;
         break;

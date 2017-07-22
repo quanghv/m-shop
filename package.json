@@ -10,7 +10,7 @@
 	"dependencies": {
 		"axios": "^0.16.2",
 		"eslint-config-rallycoding": "^3.2.0",
-		"frisbee": "^1.5.0",
+		"moment": "^2.18.1",
 		"native-base": "^2.1.5",
 		"react": "16.0.0-alpha.12",
 		"react-native": "0.45.1",

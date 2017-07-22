@@ -7,6 +7,7 @@ import TabShipping from "./tabScreen/TabShipping";
 import TabFinish from "./tabScreen/TabFinish";
 import TabCancel from "./tabScreen/TabCancel";
 import OrderDetail from "./OrderDetail";
+import AppHeader from "../layout/AppHeader";
 
 export const TabScreen = TabNavigator(
   {
@@ -16,6 +17,9 @@ export const TabScreen = TabNavigator(
     TabCancel: { screen: TabCancel }
   },
   {
+    navigationOptions: {
+      header: <AppHeader isHome="true" />
+    },
     lazy: true,
     tabBarPosition: "bottom",
     tabBarComponent: props =>
@@ -64,7 +68,7 @@ export const MainStack = StackNavigator(
     OrderDetail: { screen: OrderDetail }
   },
   {
-    headerMode: "none",
-    mode: "modal"
+    headerMode: "screen",
+    mode: "card"
   }
 );

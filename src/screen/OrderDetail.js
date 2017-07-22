@@ -1,4 +1,5 @@
 import React from "react";
+import { BackHandler } from "react-native";
 import { connect } from "react-redux";
 import { View, StyleSheet, Alert, Text } from "react-native";
 import {
@@ -12,8 +13,12 @@ import {
   Picker,
   List,
   ListItem,
-  Thumbnail
+  Button,
+  Thumbnail,
+  ActionSheet,
+  Item
 } from "native-base";
+import Moment from "moment";
 
 import AppHeader from "../layout/AppHeader";
 import {
@@ -24,15 +29,29 @@ import {
 
 import { consoleLog } from "../appLog";
 import AppBase from "../layout/AppBase";
+import constant from "../constant";
 
-const Item = Picker.Item;
+// const Item = Picker.Item;
+const BUTTONS = [
+  { text: "Option 0", icon: "american-football", iconColor: "#2c8ef4" },
+  { text: "Option 1", icon: "analytics", iconColor: "#f42ced" },
+  { text: "Option 2", icon: "aperture", iconColor: "#ea943b" },
+  { text: "Delete", icon: "trash", iconColor: "#fa213b" },
+  { text: "Cancel", icon: "close", iconColor: "#25de5b" }
+];
+const DESTRUCTIVE_INDEX = 3;
+const CANCEL_INDEX = 4;
 
 class OrderDetail extends AppBase {
+  static navigationOptions = {
+    header: null
+  };
+
   constructor(props) {
     super(props);
+    // consoleLog(this.props.navigation.state.params);
     this.state = {
       selected1: this.props.navigation.state.params.selected,
-      statusColor: "gray",
       needToRefresh: false
     };
   }
@@ -41,18 +60,27 @@ class OrderDetail extends AppBase {
     this.props.getOrderDetail(this.props.navigation.state.params.orderId);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    consoleLog("componentDidUpdate");
-    this.props.resetOrderStatus();
-  }
-
   // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.orderStatus !== null) {
+  //   consoleLog("nextProps", nextProps);
+  //   if (nextProps.orderDetail !== null && !nextProps.orderStatus) {
   //     this.setState({
-  //       needToRefresh: true
+  //       statusColor: this.getStatusColor(nextProps.orderDetail.info.status)
   //     });
   //   }
   // }
+
+  componentDidUpdate(prevProps, prevState) {
+    // console.log(this.props);
+    // BackHandler.addEventListener("hardwareBackPress", () => {
+    //   if (this.state.needToRefresh) {
+    //     prevProps.navigation.state.params.refreshFunc();
+    //     prevProps.navigation.goBack();
+    //   }
+    // });
+    // consoleLog("componentDidUpdate");
+
+    this.props.resetOrderStatus();
+  }
 
   onValueChange = value => {
     //send data to server
@@ -68,33 +96,43 @@ class OrderDetail extends AppBase {
 
   getStatusColor = status => {
     switch (status) {
-      case "-1":
-        return "#FF5722";
-      case "-11":
-        return "#FF5722";
-      case "-12":
-        return "#B0BEC5";
-      case "-2":
-        return "#7f8c8d";
-      case "0":
-        return "#1976D2";
-      case "1":
-        return "#2E7D32";
+      case constant.STATUS.CONFIRM:
+        return constant.COLORS.CONFIRM;
+      case constant.STATUS.CONFIRM_SHIPPING:
+        return constant.COLORS.CONFIRM_SHIPPING;
+      case constant.STATUS.CANCEL_USER:
+        return constant.COLORS.CANCEL_USER;
+      case constant.STATUS.CANCEL:
+        return constant.COLORS.CANCEL;
+      case constant.STATUS.SHIPPING:
+        return constant.COLORS.SHIPPING;
+      case constant.STATUS.FINISH:
+        return constant.COLORS.FINISH;
       default:
-        return "#2E7D32";
+        return constant.COLORS.CANCEL;
     }
   };
 
   handleTime = dateTime => {
-    const time = new Date(dateTime);
-    return `${time.getHours()}:${time.getMinutes()}, ${time.getDate()}/${time.getMonth()}/${time.getFullYear()}`;
+    require("moment/locale/vi");
+    // const viLocale = require("moment/locale/vi");
+    // Moment.lang("vi");
+    // console.log(Moment.locale());
+    return Moment(dateTime).format("HH:mm, DD/MM/YYYY");
+    // return Moment(dateTime).calendar();
+    // const time = new Date(dateTime);
+    // return (
+    //   `${time.getHours()}:${time.getMinutes()}` +
+    //   `, ${time.getDate()}/${time.getMonth()}/${time.getFullYear()}`
+    // );
   };
 
   render() {
+    // console.log("props", this.props);
     if (this.props.orderStatus !== null) {
       Alert.alert("Thông báo", this.props.orderStatus.userMessage);
     }
-    consoleLog("changeOrderStatus", this.props.orderStatus);
+    // consoleLog("changeOrderStatus", this.props.orderStatus);
     let view = null;
     if (this.props.getError) {
       view = this.renderLoading(
@@ -106,6 +144,17 @@ class OrderDetail extends AppBase {
       );
     } else if (this.props.orderDetail !== null) {
       const orderObj = this.props.orderDetail.info;
+      let textNote = null;
+      if (orderObj.note !== null) {
+        textNote = (
+          <View>
+            <Text />
+            <Text style={styles.note}>
+              {orderObj.note}
+            </Text>
+          </View>
+        );
+      }
       view = (
         <Container>
           <AppHeader
@@ -120,6 +169,24 @@ class OrderDetail extends AppBase {
                 <CardItem header>
                   <Text>Tình trạng đơn hàng</Text>
                 </CardItem>
+                {/*<CardItem>
+                  <Button
+                    onPress={() =>
+                      ActionSheet.show(
+                        {
+                          options: BUTTONS,
+                          cancelButtonIndex: CANCEL_INDEX,
+                          destructiveButtonIndex: DESTRUCTIVE_INDEX,
+                          title: "Options"
+                        },
+                        buttonIndex => {
+                          this.setState({ clicked: BUTTONS[buttonIndex] });
+                        }
+                      )}
+                  >
+                    <Text>Actionsheet</Text>
+                  </Button>
+                </CardItem>*/}
                 <Picker
                   supportedOrientations={["portrait", "landscape"]}
                   iosHeader="Select one"
@@ -127,16 +194,25 @@ class OrderDetail extends AppBase {
                   onValueChange={this.onValueChange}
                   selectedValue={this.state.selected1}
                   style={{
-                    color: this.state.statusColor,
+                    color: this.getStatusColor(this.state.selected1),
                     marginHorizontal: 10
                   }}
                 >
-                  <Item label="CHỜ XÁC NHẬN" value="-1" />
-                  <Item label="CHỜ GIAO HÀNG" value="-11" />
-                  <Item label="ĐANG GIAO HÀNG" value="0" />
-                  <Item label="HOÀN THÀNH" value="1" />
-                  <Item label="TRẢ HÀNG/HOÀN TIỀN" value="-12" />
-                  <Item label="ĐÃ HỦY" value="-2" />
+                  <Item label="CHỜ XÁC NHẬN" value={constant.STATUS.CONFIRM} />
+                  <Item
+                    label="CHỜ GIAO HÀNG"
+                    value={constant.STATUS.CONFIRM_SHIPPING}
+                  />
+                  <Item
+                    label="ĐANG GIAO HÀNG"
+                    value={constant.STATUS.SHIPPING}
+                  />
+                  <Item label="HOÀN THÀNH" value={constant.STATUS.FINISH} />
+                  <Item
+                    label="TRẢ HÀNG/HOÀN TIỀN"
+                    value={constant.STATUS.CANCEL_USER}
+                  />
+                  <Item label="ĐÃ HỦY" value={constant.STATUS.CANCEL} />
                 </Picker>
               </Card>
               <Card>
@@ -154,15 +230,7 @@ class OrderDetail extends AppBase {
                     <Text>
                       {orderObj.address_full}
                     </Text>
-                    {() => {
-                      if (orderObj.note !== null) {
-                        return (
-                          <View>
-                            <Text /> <Text note>{orderObj.note}</Text>
-                          </View>
-                        );
-                      }
-                    }}
+                    {textNote}
                   </Body>
                 </CardItem>
               </Card>

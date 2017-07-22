@@ -6,7 +6,7 @@ import { consoleLog } from "../appLog";
 
 export default class AppHeader extends React.Component {
   render() {
-    consoleLog(this.props, "test app");
+    // consoleLog(this.props, "test app");
 
     let view = null;
 

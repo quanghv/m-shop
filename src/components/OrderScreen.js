@@ -50,7 +50,7 @@ class OrderScreen extends React.Component {
     // let order_id = this.props.info != null
     //   ? this.props.info.id
     //   : this.props.order_id;
-    let dataUrl = "http://m-shop.vn/order-get-detail?order_id=" + this.props.order_id;
+    const dataUrl = "http://m-shop.vn/order-get-detail?order_id=" + this.props.order_id;
 
     //get data
     axios

@@ -23,10 +23,9 @@ export const getError = bool => ({
 
 //api action
 export const getListThunk = (page, currentData, status) => dispatch => {
-  const url = `http://m-shop.vn/api-list-order?page=
-      ${page}&size=${constant.PAGE_SIZE}&status=${status}`;
+  const url = `http://m-shop.vn/api-list-order?page=${page}&size=${constant.PAGE_SIZE}&status=${status}`;
 
-  // consoleLog("axios get...", url);
+  consoleLog("axios get...", url);
 
   if (currentData === undefined) dispatchData(dispatch, isLoading(true));
 
@@ -38,22 +37,24 @@ export const getListThunk = (page, currentData, status) => dispatch => {
       }
 
       consoleLog("get page", page);
-      // dispatch(getList(response.data.data));
+      consoleLog(response.data);
       let dataFetched = response.data.data;
       // if (dataFetched.length > 0) {
       if (page > 1) {
         dataFetched = [...currentData, ...dataFetched];
       }
-      consoleLog(dataFetched, "data new");
+      consoleLog(dataFetched, "data new" + status);
 
       let type = null;
       switch (status) {
+        case constant.STATUS.CONFIRM_SHIPPING:
         case constant.STATUS.SHIPPING:
           type = constant.TYPES.LIST_ORDER_SHIPPING;
           break;
         case constant.STATUS.FINISH:
           type = constant.TYPES.LIST_ORDER_FINISH;
           break;
+        case constant.STATUS.CANCEL_USER:
         case constant.STATUS.CANCEL:
           type = constant.TYPES.LIST_ORDER_CANCEL;
           break;
